@@ -80,8 +80,8 @@ if __name__ == "__main__":
     input_signal = sp.ps_signal(
         args.file,
         "signal3",
-        start=(start_intervall := (args.i[0] if args.i else None)),
-        length=(length_intervall := (args.i[1] if args.i else None)),
+        start_ms=(start_intervall := (args.i[0] if args.i else None)),
+        length_ms=(length_intervall := (args.i[1] if args.i else None)),
     )
     input_signal.plot()
 

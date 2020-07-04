@@ -40,7 +40,7 @@ def import_data(file):
 class ps_signal():
     """[summary]
     """
-    def __init__(self, filename, id, start=None, length=None):
+    def __init__(self, filename, id, start_ms=None, length_ms=None):
         """[summary]
 
         Args:
@@ -55,46 +55,63 @@ class ps_signal():
             self._data = pd.read_csv(filename, sep=";", decimal=",",
                                      skiprows=[0, 2])
 
-            self._data.columns = ["time", "acc"]
-
-            # Takes the difference between the first two data
-            # points and calculates the time difference.
-            # This assumed as the time step and used to calculate
-            # sampling frequency and period used for fft.
-            # Division by 1000 as data is normally stored in ms
-            # instead of seconds. Rounded two the 12th decimal.
-            self._t = round(
-                (self._data.time.iloc[1] - self._data.time.iloc[0]) / 1000, 12
-            )
-
-            self._drop_data(start, length)
-
-            self._fs = int(round(1 / self._t))
-            print(f"FS: {self._fs}")
-            self._n = len(self._data)
-            self._fft = None
-            self.raw_x = self._data.acc
-            self.time = self._data.time
-            self.id = str(id)
-            self.fft_y_filt = None
-            self.fft_y = None
-
         # Error if the file was not found.
         except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
             sys.exit(error)
 
-    def _drop_data(self, start, length):
-        # If start is specified, remove n numbers of rows
-        # starting from the beginning.
-        if start:
+        self._data.columns = ["time", "acc"]
+
+        # Takes the difference between the first two data
+        # points and calculates the time difference.
+        # This assumed as the time step and used to calculate
+        # sampling frequency and period used for fft.
+        # Division by 1000 as data is normally stored in ms
+        # instead of seconds. Rounded two the 12th decimal. 8928571
+        self._t = round(
+            (self._data.time.iloc[1] - self._data.time.iloc[0]) / 1000, 12
+        )
+        self._fs = int(round(1 / self._t))
+
+        # Shift data so it begins from 0 in case
+        # data was saved before trigger.
+        self._data.time -= self._data.time.iloc[0]
+
+        self._drop_data(start_ms, length_ms)
+
+        self._n = len(self._data)
+        self._fft = None
+        self.raw_x = self._data.acc
+        self.time = self._data.time
+        self.id = str(id)
+        self.fft_y_filt = None
+        self.fft_y = None
+
+    def _drop_data(self, start_ms, length_ms):
+        """[summary]
+
+        Args:
+            start_ms ([type]): [description]
+            length_ms ([type]): [description]
+        """
+        if start_ms:
+            # Convert from shift in ms as input from cli
+            # to number of samples as the data is stored.
+            start = round(start_ms*self._fs / 1000)
+
+            # If start is specified, remove n numbers of rows
+            # starting from the beginning.
             self._data.drop(
                 self._data.index[list(range(0, start))],
                 inplace=True)
 
-        # If length is specified, drop everything after
-        # length is reached. Used together with "start"
-        # to specify a interval.
-        if length:
+        if length_ms:
+            # Convert from shift in ms as input from cli
+            # to number of samples as the data is stored.
+            length = round(length_ms*self._fs / 1000)
+
+            # If length is specified, drop everything after
+            # length is reached. Used together with "start"
+            # to specify a interval.
             self._data.drop(
                 self._data.index[
                     list(range(length, len(self._data)))],
