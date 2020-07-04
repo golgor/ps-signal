@@ -75,9 +75,15 @@ def run_fft():
 
 
 if __name__ == "__main__":
-    # args = cli.parser.parse_args()
-    # print(args.file)
-    run_fft()
+    args = cli.parser.parse_args()
+
+    input_signal = sp.ps_signal(
+        args.file,
+        "signal3",
+        start=(start_intervall := (args.i[0] if args.i else None)),
+        length=(length_intervall := (args.i[1] if args.i else None)),
+    )
+    input_signal.plot()
 
 """
 x1, y1, n1 = sp.calc_fft(fs, data1.acc)

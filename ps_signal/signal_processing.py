@@ -40,7 +40,7 @@ def import_data(file):
 class ps_signal():
     """[summary]
     """
-    def __init__(self, filename, id, start=0, length=None):
+    def __init__(self, filename, id, start=None, length=None):
         """[summary]
 
         Args:
@@ -57,20 +57,6 @@ class ps_signal():
 
             self._data.columns = ["time", "acc"]
 
-            # If start is specified, remove n numbers of rows
-            # starting from the beginning.
-            self._data.drop(self._data.index[list(range(0, start))],
-                            inplace=True)
-
-            # If length is specified, drop everything after
-            # length is reached. Used together with "start"
-            # to specify a interval.
-            if length:
-                self._data.drop(
-                    self._data.index[
-                        list(range(length, len(self._data)))],
-                    inplace=True)
-
             # Takes the difference between the first two data
             # points and calculates the time difference.
             # This assumed as the time step and used to calculate
@@ -81,7 +67,10 @@ class ps_signal():
                 (self._data.time.iloc[1] - self._data.time.iloc[0]) / 1000, 12
             )
 
+            self._drop_data(start, length)
+
             self._fs = int(round(1 / self._t))
+            print(f"FS: {self._fs}")
             self._n = len(self._data)
             self._fft = None
             self.raw_x = self._data.acc
@@ -94,7 +83,24 @@ class ps_signal():
         except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
             sys.exit(error)
 
-    def plot(self, filename=False, title="No title set", filtered=None):
+    def _drop_data(self, start, length):
+        # If start is specified, remove n numbers of rows
+        # starting from the beginning.
+        if start:
+            self._data.drop(
+                self._data.index[list(range(0, start))],
+                inplace=True)
+
+        # If length is specified, drop everything after
+        # length is reached. Used together with "start"
+        # to specify a interval.
+        if length:
+            self._data.drop(
+                self._data.index[
+                    list(range(length, len(self._data)))],
+                inplace=True)
+
+    def plot(self, filename=None, title=None, filtered=None):
         """[summary]
 
         Args:
@@ -104,6 +110,9 @@ class ps_signal():
         """
         if not filename:
             filename = self.id
+
+        if not title:
+            title = "No title set"
 
         plt.figure(figsize=(14, 10))
 
