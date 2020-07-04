@@ -1,31 +1,83 @@
-import matplotlib.pyplot as plt
-import signal_processing as sp
+import ps_signal.signal_processing as sp
+import ps_signal.cli as cli
 
 
-DATAFILE1 = "20200612-0001-upp-ner-cylinder-avfettad.csv"
-DATAFILE2 = "20200612-0001-avfettad-cyliner-islag-i-topplock.csv"
+def run_fft():
+    DATAFILE1 = "20200612-0001-upp-ner-cylinder-avfettad.csv"
+    # DATAFILE2 = "20200612-0001-avfettad-cyliner-islag-i-topplock.csv"
+
+    # data = sp.import_data(DATAFILE1)
+
+    # Sampling time calculated as difference between two samples.
+    # Times 1000 to convert from KHz to Hz (Time was in ms)
+
+    signal1 = sp.ps_signal(
+        DATAFILE1,
+        "signal1",
+        start=1350000,
+        length=1070000
+    )
+
+    signal2 = sp.ps_signal(
+        DATAFILE1,
+        "signal2",
+        start=2420000,
+        length=1030000
+    )
+
+    signal3 = sp.ps_signal(
+        DATAFILE1,
+        "signal3",
+        start=3450000,
+        length=1150000
+    )
+
+    signal1.apply_filter(3e5)
+    signal1.plot_fft(
+        filename="s1-fft-pre-filt",
+        title="s1-pre-filt"
+    )
+    signal1.plot_fft(
+        filename="s1-fft-post-filt",
+        title="s1-post-filt",
+        filtered=True
+    )
+    signal1.plot(
+        filename="s1-pre-filt",
+        title="Signal 1 unfiltered"
+    )
+    signal1.plot(
+        filename="s1-post-filt",
+        title="Signal 1 filtered",
+        filtered=True
+    )
+
+    signal2.apply_filter(3e5)
+    signal2.plot_fft(
+        filename="s2-fft-pre-filt",
+        title="s2-pre-filt",
+        ylim=[0, 1e5]
+    )
+    signal2.plot_fft(
+        filename="s2-fft-post-filt",
+        title="s2-post-filt",
+        filtered=True, ylim=[0, 5e4]
+    )
+    signal2.plot(
+        filename="s2-pre-filt",
+        title="Signal 2 unfiltered"
+    )
+    signal2.plot(
+        filename="s2-post-filt",
+        title="Signal 2 filtered",
+        filtered=True
+    )
 
 
-data = sp.import_data(DATAFILE1)
-
-# Sampling time calculated as difference between two samples.
-# Times 1000 to convert from KHz to Hz (Time was in ms)
-
-signal1 = sp.ps_signal(DATAFILE1, "signal1", start=1350000, length=1070000)
-signal2 = sp.ps_signal(DATAFILE1, "signal2", start=2420000, length=1030000)
-signal3 = sp.ps_signal(DATAFILE1, "signal3", start=3450000, length=1150000)
-
-signal1.apply_filter(3e5)
-signal1.plot_fft(filename="s1-fft-pre-filt", title="s1-pre-filt")
-signal1.plot_fft(filename="s1-fft-post-filt", title="s1-post-filt", filtered=True)
-signal1.plot(filename="s1-pre-filt", title="Signal 1 unfiltered")
-signal1.plot(filename="s1-post-filt", title="Signal 1 filtered", filtered=True)
-
-signal2.apply_filter(3e5)
-signal2.plot_fft(filename="s2-fft-pre-filt", title="s2-pre-filt", ylim=[0, 1e5])
-signal2.plot_fft(filename="s2-fft-post-filt", title="s2-post-filt", filtered=True, ylim=[0,5e4])
-signal2.plot(filename="s2-pre-filt", title="Signal 2 unfiltered")
-signal2.plot(filename="s2-post-filt", title="Signal 2 filtered", filtered=True)
+if __name__ == "__main__":
+    # args = cli.parser.parse_args()
+    # print(args.file)
+    run_fft()
 
 """
 x1, y1, n1 = sp.calc_fft(fs, data1.acc)
