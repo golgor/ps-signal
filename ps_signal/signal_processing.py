@@ -9,34 +9,6 @@ import seaborn as sns
 
 sns.set(color_codes=True)
 
-# fs = 0
-
-
-def calc_fft(fs, data):
-    n = len(data)
-    yf = fft(np.array(data))
-    xf = fftfreq(len(yf), 1 / fs)
-    return xf, yf, n
-
-
-def _create_butter_lowpass(cutoff, fs, order=2):
-    nyq = 0.5 * fs
-    normalized_cutoff = cutoff / nyq
-    b, a = signal.butter(order, normalized_cutoff, btype="low", analog=False)
-    return b, a
-
-
-def butter_lowpass_filter(data, cutoff, fs, order=5):
-    b, a = _create_butter_lowpass(cutoff, fs, order)
-    y = signal.filtfilt(b, a, data)
-    return y
-
-
-def import_data(file):
-    data = pd.read_csv(file, sep=";", decimal=",", skiprows=[0, 2])
-    data.columns = ["time", "acc"]
-    return data
-
 
 class ps_signal:
     """[summary]
@@ -127,8 +99,6 @@ class ps_signal:
 
         plt.figure(figsize=(14, 10))
 
-        # TODO: String for title!
-
         plt.plot(self.time, self.acc)
         plt.xlabel("Time (ms)")
         plt.ylabel("Amplitude")
@@ -189,7 +159,14 @@ class ps_signal:
             type (str, optional): [description]. Defaults to "low".
         """
         nyq = 0.5 * self._fs
-        normalized_cutoff = cutoff / nyq
+
+        if not type == "band":
+            normalized_cutoff = cutoff / nyq
+        else:
+            normalized_cutoff = list()
+            normalized_cutoff.append(cutoff[0] / nyq)
+            normalized_cutoff.append(cutoff[1] / nyq)
+
         b, a = signal.butter(
             order,
             normalized_cutoff,
@@ -202,14 +179,52 @@ class ps_signal:
         self.acc = signal.filtfilt(b, a, self.acc)
 
     def _get_filter_string(self, sep):
+        """[summary]
+
+        Args:
+            sep ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
+        filters = self._applied_filters
+
+        # Create string containing upper and lower for bandstop filter.
+        # This is needed as it is send as a list and not as a single value.
+        # Using int() to create integer from float, otherwise it will add
+        # decimals to outputted hertz, but lowest  quantization is 1Hz.
+        if "band" in filters:
+            filters["band"] = "-".join(
+                [
+                    str(int(filters["band"][0])),
+                    str(int(filters["band"][1]))
+                ]
+            )
+        # Casting to int() to remove the decimal from Hz saved in filename.
+        if "low" in filters:
+            filters["low"] = int(filters["low"])
+        if "high" in filters:
+            filters["high"] = int(filters["high"])
+
+        # Add all filters from the applied filters dict to a list.
+        # If None, do not add, otherwise stringify filter type
+        # and filter frequency with "sep" in betwen.
         filter_list = [
-            sep.join([str(filt_type), str(int(filt_cutoff))])
-            for filt_type, filt_cutoff in self._applied_filters.items()
-            if self._applied_filters is not None
+            sep.join([str(filt_type), str(filt_cutoff)])
+            for filt_type, filt_cutoff in filters.items()
+            if filters is not None
         ]
         return filter_list
 
     def _get_filename(self, filename):
+        """[summary]
+
+        Args:
+            filename ([type]): [description]
+
+        Returns:
+            [type]: [description]
+        """
         # If no filename is provided, use the id of the signal.
         if not filename:
             filename = self.id

@@ -20,6 +20,9 @@ if __name__ == "__main__":
         # Perform highpass filtering
         input_signal.apply_filter(cutoff=args.hp, order=5, type="high")
 
+    if args.bs:
+        input_signal.apply_filter(cutoff=args.bs, order=5, type="band")
+
     if args.fft:
         input_signal.plot_fft(
             ylim=[0, 5e5],
