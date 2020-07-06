@@ -11,17 +11,39 @@ sns.set(color_codes=True)
 
 
 class ps_signal:
-    """[summary]
+    """
+    Class for importing and analysing signals.
+
+    The signals needs to be imported from a .csv file that is exported
+    from the Picoscope software. Several different kind of analyses is
+    possible, such as applying filters and performing a FFT.
+
+    Output files will be generated in a .png-format depending on the
+    parameters given for each method in this class.
     """
 
     def __init__(self, filename, id, start_ms=None, length_ms=None):
-        """[summary]
+        """
+        Initialization function for the class ps_signal. This function
+        reads in the .csv file using pandas.read_csv, clean the data and
+        calculate some signal specific parameters such as sampling frequency.
 
-        Args:
-            filename ([type]): [description]
-            id ([type]): [description]
-            start (int, optional): [description]. Defaults to 0.
-            length ([type], optional): [description]. Defaults to None.
+        Args
+        ----
+        filename : str
+                The name of the file to read from. Current working directory
+                is assumed.
+        id : str
+                A string identifier of the signal. This is used to generate
+                filenames of output files.
+        start : int, optional
+                Where to start the analysis of the signal. Data below this
+                point is effectively cut out and not analysed at all.
+                Value is given in milliseconds. Defaults to 0.
+        length : int, optional
+                Where to end the analysis of the signal. This is specified
+                as the length from the defined start, see above. If not
+                specified, length is assumed to be "the rest of the signal".
         """
         try:
             # Formatting of file is separated by ";" and decimals using ","
@@ -52,17 +74,23 @@ class ps_signal:
 
         self._n = len(self._data)
         self.id = str(id)
-        self.fft_y_filt = None
         self.fft_y = None
         self.filt_x = None
         self._applied_filters = {}
 
     def _drop_data(self, start_ms, length_ms):
-        """[summary]
+        """
+        Internal function used to drop data from the pandas dataframe.
+        This is used to isolate certain parts of the signal. I.e. If
+        only a small part of the full signal is of interest, this
+        function is used to keep only the data of interest.
 
-        Args:
-            start_ms ([type]): [description]
-            length_ms ([type]): [description]
+        Args
+        ----
+        start_ms : int
+                Where the signal of interest starts. Given in ms.
+        length_ms : int
+                The length of the signal in milliseconds. Given in ms.
         """
         if start_ms:
             # Convert from shift in ms as input from cli
@@ -88,12 +116,16 @@ class ps_signal:
             )
 
     def plot(self, filename=None, title=None):
-        """[summary]
+        """
+        Plotting the imported signal and saves it to disk.
 
-        Args:
-            filename (bool, optional): [description]. Defaults to False.
-            title (str, optional): [description]. Defaults to "No title set".
-            filtered ([type], optional): [description]. Defaults to None.
+        Args
+        ----
+        filename : str
+                The wanted filename of the output file. If not specified
+                the filename prefix will be the same as the id of the signal.
+        title : str
+                The wanted title of the plot. Defaults to "No title set".
         """
         file_string = self._get_filename(filename)
 
@@ -108,18 +140,32 @@ class ps_signal:
 
     # Doing to actual FFT on the signal.
     def _apply_fft(self):
-        """[summary]
+        """
+        Internal function to apply the actual FFT on the signal.
         """
         self.fft_y = fft(np.array(self.acc))
         self.fft_x = fftfreq(len(self.fft_y), 1 / self._fs)
 
-    def plot_fft(self, filename=None, title=None, ylim=None):
-        """[summary]
+    def plot_fft(self, filename=None, title=None, xlim=[10, 1200], ylim=None):
+        """
+        Performs an FFT of the signal, creates a plot and saves it to disk.
 
-        Args:
-            filename ([type], optional): [description]. Defaults to None.
-            title (str, optional): [description]. Defaults to "No title set".
-            ylim ([type], optional): [description]. Defaults to None.
+        Args
+        ----
+        filename : str, optional
+                The wanted prefix of the output file. If not specified
+                the filename prefix will be the same as the id of the
+                signal.
+        title : str, optional
+                The wanted title of the plot. Defaults to "No title set".
+        xlim : [int, int], optional
+                A list of integer indicating the wanted range on the x-axis.
+                Defaults to 10, 1200. Left limit is set to 10 as to hide the
+                fundamental frequency, which usually is not of interest and
+                skews the graph.
+        ylim : [int, int], optional
+                A list of integer indicating the wanted range on the y-axis.
+                Defaults to None, which means autoscaling.
         """
 
         file_string = self._get_filename(filename)
@@ -142,7 +188,7 @@ class ps_signal:
         plt.ylabel("Amplitude")
         plt.title(f"{title}")
         plt.autoscale(enable=True, axis="y", tight=True)
-        plt.xlim([10, 1200])
+        plt.xlim(xlim)
 
         if ylim:
             plt.ylim(ylim)
@@ -151,16 +197,36 @@ class ps_signal:
         plt.close()
 
     def apply_filter(self, cutoff, order=5, type="low"):
-        """[summary]
+        """
+        Apply a filter to the imported signal.
 
-        Args:
-            cutoff ([type]): [description]
-            order (int, optional): [description]. Defaults to 5.
-            type (str, optional): [description]. Defaults to "low".
+        This function is used to apply four different filters to
+        to the signal:
+        * Lowpass filter
+        * Highpass filter
+        * Bandstop filter
+        * Bandpass filter by using lowpass- and highpass filter simultaneously
+
+        Args
+        ----
+        cutoff : float, int or list
+                The cutoff frequency for the chosen filter.
+                For lowpass- and highpass filters this is a integer
+                or float. For bandpass filter this is a list with two
+                elements, where both elements are int or float type.
+        order : int, optional
+                What order of filter to apply, defaults to 5.
+        type : str, optional
+                What type of filter to apply to the signal:
+                low = Low pass
+                high = High pass
+                stop = Bandstop
+                Defaults to "low".
         """
         nyq = 0.5 * self._fs
 
-        if not type == "band":
+        # Normalize the filter around the Nyqvist frequency.
+        if not type == "stop":
             normalized_cutoff = cutoff / nyq
         else:
             normalized_cutoff = list()
@@ -174,18 +240,25 @@ class ps_signal:
             analog=False
         )
 
+        # Adding the currently applied filter to a dict.
+        # Dict is later used for filename generation.
         self._applied_filters[type] = cutoff
 
         self.acc = signal.filtfilt(b, a, self.acc)
 
     def _get_filter_string(self, sep):
-        """[summary]
+        """
+        Internal function to the get a string of all applied filters.
 
-        Args:
-            sep ([type]): [description]
+        Args
+        ----
+        sep : str
+                The type of seperator to use for the string representation.
 
-        Returns:
-            [type]: [description]
+        Returns
+        -------
+        filter_list: [str]
+                A list of strings representing all the applied filters.
         """
         filters = self._applied_filters
 
@@ -216,18 +289,28 @@ class ps_signal:
         ]
         return filter_list
 
-    def _get_filename(self, filename):
-        """[summary]
+    def _get_filename(self, filename=None):
+        """
+        Internal function for generating the filename that the output
+        file will be saved with.
 
-        Args:
-            filename ([type]): [description]
+        Args
+        ----
+        filename : str, optional
+                The wanted prefix of the output file. If not specified
+                the filename prefix will be the same as the id of the
+                signal.
 
-        Returns:
-            [type]: [description]
+        Returns
+        -------
+        ret: str
+                A string containing the prefix and all the applied filters.
         """
         # If no filename is provided, use the id of the signal.
         if not filename:
             filename = self.id
 
         filter_list = self._get_filter_string("-")
-        return "_".join([filename, *filter_list])
+        ret = "_".join([filename, *filter_list])
+
+        return ret
