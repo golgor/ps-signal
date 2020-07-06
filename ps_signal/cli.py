@@ -47,14 +47,14 @@ parser.add_argument(
     "-lp",
     metavar="cutoff",
     required=False,
-    type=int,
+    type=float,
     help=lowpass_help
 )
 parser.add_argument(
     "-hp",
     metavar="cutoff",
     required=False,
-    type=int,
+    type=float,
     help=highpass_help
 )
 parser.add_argument(
@@ -62,7 +62,7 @@ parser.add_argument(
     metavar=("lower", "upper"),
     nargs=2,
     required=False,
-    type=int,
+    type=float,
     help=bandstop_help,
 )
 parser.add_argument(

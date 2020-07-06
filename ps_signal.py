@@ -83,7 +83,19 @@ if __name__ == "__main__":
         start_ms=(start_intervall := (args.i[0] if args.i else None)),
         length_ms=(length_intervall := (args.i[1] if args.i else None)),
     )
-    input_signal.plot()
+
+    if args.lp:
+        # Perform low pass filtering
+        input_signal.apply_filter(cutoff=args.lp, order=5, type="low")
+
+    if args.hp:
+        # Perform highpass filtering
+        input_signal.apply_filter(cutoff=args.hp, order=5, type="high")
+
+    # print(args.bs)
+    input_signal.plot(
+        filtered=bool(args.lp) or bool(args.hp)
+    )
 
 """
 x1, y1, n1 = sp.calc_fft(fs, data1.acc)
