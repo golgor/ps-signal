@@ -54,13 +54,18 @@ class ps_signal:
         try:
             # Formatting of file is separated by ";" and decimals using ","
             # First two rows are headers.
-            self._data = pd.read_csv(filename, sep=";", decimal=",", skiprows=[0, 2])
+            self._data = pd.read_csv(filename, sep=";", decimal=",",
+                                     skiprows=[0, 2])
 
         # Error if the file was not found.
         except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
             sys.exit(error)
 
+        # Shift data so it begins from 0 in case
+        # data was saved before trigger.
         self._data.columns = ["time", "acc"]
+        self.acc = self._data.acc
+        self.time = self._data.time - self._data.time.iloc[0]
 
         # Takes the difference between the first two data
         # points and calculates the time difference.
@@ -68,19 +73,12 @@ class ps_signal:
         # sampling frequency and period used for fft.
         # Division by 1000 as data is normally stored in ms
         # instead of seconds. Rounded two the 12th decimal. 8928571
-        self._t = round((self._data.time.iloc[1] - self._data.time.iloc[0]) / 1000, 12)
+        self._t = round((self.time.iloc[1] - self.time.iloc[0]) / 1000, 12)
         self._fs = int(round(1 / self._t))
-
-        # Shift data so it begins from 0 in case
-        # data was saved before trigger.
-        self._data.time -= self._data.time.iloc[0]
 
         self._drop_data(start_ms, length_ms)
 
         self._n = len(self._data)
-        self._fft = None
-        self.raw_x = self._data.acc
-        self.time = self._data.time
         self.id = str(id)
         self.fft_y_filt = None
         self.fft_y = None
@@ -101,7 +99,8 @@ class ps_signal:
 
             # If start is specified, remove n numbers of rows
             # starting from the beginning.
-            self._data.drop(self._data.index[list(range(0, start))], inplace=True)
+            self._data.drop(self._data.index[list(range(0, start))],
+                            inplace=True)
 
         if length_ms:
             # Convert from shift in ms as input from cli
@@ -112,10 +111,11 @@ class ps_signal:
             # length is reached. Used together with "start"
             # to specify a interval.
             self._data.drop(
-                self._data.index[list(range(length, len(self._data)))], inplace=True
+                self._data.index[list(range(length, len(self._data)))],
+                inplace=True
             )
 
-    def plot(self, filename=None, title=None, filtered=None):
+    def plot(self, filename=None, title=None):
         """[summary]
 
         Args:
@@ -126,41 +126,33 @@ class ps_signal:
         if not filename:
             filename = self.id
 
+        file_string = self._get_filename(filename)
+
         if not title:
             title = "No title set"
 
         plt.figure(figsize=(14, 10))
 
-        if filtered:
-            filename_filter = self._get_filter_string()
-            plt.plot(self.time, self.filt_x)
-            plt.xlabel("Time (ms)")
-            plt.ylabel("Amplitude")
-            plt.title(f"{title}_filt")
-            plt.savefig(f"{filename}_{filename_filter}.png")
-        else:
-            plt.plot(self.time, self.raw_x)
-            plt.xlabel("Time (ms)")
-            plt.ylabel("Amplitude")
-            plt.title(title)
-            plt.savefig(f"{filename}.png")
+        # TODO: String for title!
+
+        plt.plot(self.time, self.acc)
+        plt.xlabel("Time (ms)")
+        plt.ylabel("Amplitude")
+        plt.title(title)
+        plt.savefig(f"{file_string}.png")
         plt.close()
 
     # Doing to actual FFT on the signal.
-    def _apply_fft(self, filtered=False):
+    def _apply_fft(self):
         """[summary]
 
         Args:
             filtered (bool, optional): [description]. Defaults to False.
         """
-        if filtered:
-            self.fft_y_filt = fft(np.array(self.filt_x))
-            self.fft_x_filt = fftfreq(len(self.fft_y_filt), 1 / self._fs)
-        else:
-            self.fft_y = fft(np.array(self.raw_x))
-            self.fft_x = fftfreq(len(self.fft_y), 1 / self._fs)
+        self.fft_y = fft(np.array(self.acc))
+        self.fft_x = fftfreq(len(self.fft_y), 1 / self._fs)
 
-    def plot_fft(self, filename=None, title="No title set", filtered=False, ylim=None):
+    def plot_fft(self, filename=None, title="No title set", ylim=None):
         """[summary]
 
         Args:
@@ -173,32 +165,24 @@ class ps_signal:
         if not filename:
             filename = self.id
 
+        file_string = self._get_filename(filename)
+
         plt.figure(figsize=(14, 10))
 
-        if filtered:
-            if not self.fft_y_filt:
-                self._apply_fft(filtered=True)
+        # Applying actual FFT on the signal.
+        self._apply_fft()
 
-            # Using slicing as fft results are both positive and negative.
-            # We are only interested in positive. Both fft and fftfreq
-            # store positive data in first half of array and negative data
-            # data in the second half. Thus we only plot the first
-            # half of each. Division by 1000 to get KHz instad of Hz.
-            plt.plot(
-                self.fft_x_filt[: self._n // 2] / 1000,
-                abs(self.fft_y_filt[: self._n // 2])
-            )
+        # Using slicing as fft results are both positive and negative.
+        # We are only interested in positive. Both fft and fftfreq
+        # store positive data in first half of array and negative data
+        # data in the second half. Thus we only plot the first
+        # half of each. Division by 1000 to get KHz instad of Hz.
+        plt.plot(
+            self.fft_x[: self._n // 2] / 1000,
+            abs(self.fft_y[: self._n // 2])
+        )
 
-            plt.title(f"{title}-filtered")
-        else:
-            if not self.fft_y:
-                self._apply_fft(filtered=False)
-            plt.plot(
-                self.fft_x[: self._n // 2] / 1000,
-                abs(self.fft_y[: self._n // 2])
-            )
-            plt.title(title)
-
+        plt.title(title)
         plt.xlabel("Frequency (KHz)")
         plt.ylabel("Amplitude")
         plt.title(title)
@@ -208,7 +192,7 @@ class ps_signal:
         if ylim:
             plt.ylim(ylim)
 
-        plt.savefig(f"{filename}-fft.png")
+        plt.savefig(f"{file_string}-fft.png")
         plt.close()
 
     def apply_filter(self, cutoff, order=5, type="low"):
@@ -230,12 +214,13 @@ class ps_signal:
 
         self._applied_filters[type] = cutoff
 
-        self.filt_x = signal.filtfilt(b, a, self._data.acc)
+        self.acc = signal.filtfilt(b, a, self.acc)
 
-    def _get_filter_string(self):
-        filename_filter = [
+    def _get_filename(self, filename):
+        filter_list = [
             "-".join([str(filt_type), str(int(filt_cutoff))])
             for filt_type, filt_cutoff in self._applied_filters.items()
+            if self._applied_filters is not None
         ]
 
-        return "_".join(filename_filter)
+        return "_".join([filename, *filter_list])
