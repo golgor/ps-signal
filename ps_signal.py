@@ -97,6 +97,12 @@ if __name__ == "__main__":
         filtered=bool(args.lp) or bool(args.hp)
     )
 
+    if args.fft:
+        input_signal.plot_fft(
+            filtered=bool(args.lp) or bool(args.hp),
+            ylim=[0, 5e5]
+        )
+
 """
 x1, y1, n1 = sp.calc_fft(fs, data1.acc)
 x2, y2, n2 = sp.calc_fft(fs, data2.acc)
