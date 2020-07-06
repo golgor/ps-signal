@@ -18,7 +18,7 @@ bandstop_help = "Apply band stop filter to the signal. Effectively removing \
                  Cutoff given in Hz."
 output_help = "Folder for output. Note: Not a file but a folder as this \
                script will output several files."
-
+title_help = "Title that will be applied to the plot."
 
 parser = argparse.ArgumentParser(
     description=welcome,
@@ -71,6 +71,14 @@ parser.add_argument(
     required=False,
     type=int,
     help=output_help
+)
+
+parser.add_argument(
+    "-t",
+    metavar="title",
+    required=False,
+    type=str,
+    help=title_help
 )
 
 # For testing purposes during development only.

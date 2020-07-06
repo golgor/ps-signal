@@ -123,13 +123,7 @@ class ps_signal:
             title (str, optional): [description]. Defaults to "No title set".
             filtered ([type], optional): [description]. Defaults to None.
         """
-        if not filename:
-            filename = self.id
-
         file_string = self._get_filename(filename)
-
-        if not title:
-            title = "No title set"
 
         plt.figure(figsize=(14, 10))
 
@@ -138,32 +132,25 @@ class ps_signal:
         plt.plot(self.time, self.acc)
         plt.xlabel("Time (ms)")
         plt.ylabel("Amplitude")
-        plt.title(title)
+        plt.title(f"{title}")
         plt.savefig(f"{file_string}.png")
         plt.close()
 
     # Doing to actual FFT on the signal.
     def _apply_fft(self):
         """[summary]
-
-        Args:
-            filtered (bool, optional): [description]. Defaults to False.
         """
         self.fft_y = fft(np.array(self.acc))
         self.fft_x = fftfreq(len(self.fft_y), 1 / self._fs)
 
-    def plot_fft(self, filename=None, title="No title set", ylim=None):
+    def plot_fft(self, filename=None, title=None, ylim=None):
         """[summary]
 
         Args:
             filename ([type], optional): [description]. Defaults to None.
             title (str, optional): [description]. Defaults to "No title set".
-            filtered (bool, optional): [description]. Defaults to False.
             ylim ([type], optional): [description]. Defaults to None.
         """
-        # If no filename is provided, use the id of the signal.
-        if not filename:
-            filename = self.id
 
         file_string = self._get_filename(filename)
 
@@ -181,11 +168,9 @@ class ps_signal:
             self.fft_x[: self._n // 2] / 1000,
             abs(self.fft_y[: self._n // 2])
         )
-
-        plt.title(title)
         plt.xlabel("Frequency (KHz)")
         plt.ylabel("Amplitude")
-        plt.title(title)
+        plt.title(f"{title}")
         plt.autoscale(enable=True, axis="y", tight=True)
         plt.xlim([10, 1200])
 
@@ -216,11 +201,18 @@ class ps_signal:
 
         self.acc = signal.filtfilt(b, a, self.acc)
 
-    def _get_filename(self, filename):
+    def _get_filter_string(self, sep):
         filter_list = [
-            "-".join([str(filt_type), str(int(filt_cutoff))])
+            sep.join([str(filt_type), str(int(filt_cutoff))])
             for filt_type, filt_cutoff in self._applied_filters.items()
             if self._applied_filters is not None
         ]
+        return filter_list
 
+    def _get_filename(self, filename):
+        # If no filename is provided, use the id of the signal.
+        if not filename:
+            filename = self.id
+
+        filter_list = self._get_filter_string("-")
         return "_".join([filename, *filter_list])
