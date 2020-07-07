@@ -9,8 +9,7 @@ def main():
     length_intervall = args.i[1] if args.i else None
     title = args.t if args.t else None
 
-    input_signal = sp.ps_signal(
-        filename=args.file,
+    input_signal = sp.ps_signal(filename=args.file,
         id="signal3",
         start_ms=start_interval,
         length_ms=length_intervall,
