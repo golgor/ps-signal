@@ -2,12 +2,20 @@
 Module used to import .csv files made form a pico scope and analyse the data.
 
 ## How to install
-1. Clone repository
-2. Enter the git repo
-3. Install by using 'pip install .'
-
+Clone repository
+```
+$ git clone git@github.com:golgor/ps_signal.git
+```
+Navigate to the cloned repo
+```
+$ cd ps_signal
+```
+Install using pip
+```
+$ pip install .
+```
 ## How to use
-This is a script using a Command Line Interface (CLI). Run the script by invoking:
+This is a script using a Command Line Interface (CLI). Either you can run it by 
 ```
 $ python py_signal
 ```
