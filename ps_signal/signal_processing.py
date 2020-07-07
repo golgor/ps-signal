@@ -129,6 +129,9 @@ class ps_signal:
         """
         file_string = self._get_filename(filename)
 
+        if not title:
+            title = "Not set"
+
         plt.figure(figsize=(14, 10))
 
         plt.plot(self.time, self.acc)
@@ -169,6 +172,9 @@ class ps_signal:
         """
 
         file_string = self._get_filename(filename)
+
+        if not title:
+            title = "Not set"
 
         plt.figure(figsize=(14, 10))
 
