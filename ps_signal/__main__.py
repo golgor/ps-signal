@@ -1,5 +1,5 @@
-import ps_signal.signal_processing as sp
-import ps_signal.cli as cli
+import signal_processing as sp
+import cli as cli
 
 
 if __name__ == "__main__":
