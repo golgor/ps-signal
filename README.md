@@ -33,3 +33,6 @@ Time;Channel A
 
 # Data files
 This module will work with .csv files as exported from PicoScope 6.14.x.
+
+### Other
+Using pipreqs to generate requirements.txt
