@@ -2,11 +2,12 @@
 Module used to import .csv files made form a pico scope and analyse the data.
 
 ## How to install
-Currently no install needed, simply download and follow steps below.
+1. Clone repository
+2. Enter the git repo
+3. Install by using 'pip install .'
 
 ## How to use
 This is a script using a Command Line Interface (CLI). Run the script by invoking:
-
 ```
 $ python py_signal
 ```
@@ -36,3 +37,4 @@ This module will work with .csv files as exported from PicoScope 6.14.x.
 
 ### Other
 Using pipreqs to generate requirements.txt
+Tested using Windows Subsystem for Linux with Ubuntu Bionic (18.04.4 LTS)

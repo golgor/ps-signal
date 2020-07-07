@@ -1,8 +1,8 @@
-import signal_processing as sp
-import cli as cli
+import ps_signal.signal_processing as sp
+import ps_signal.cli as cli
 
 
-if __name__ == "__main__":
+def main():
     args = cli.parser.parse_args()
 
     start_interval = args.i[0] if args.i else None
@@ -36,3 +36,7 @@ if __name__ == "__main__":
         input_signal.plot(
             title=title
         )
+
+
+if __name__ == "__main__":
+    main()
