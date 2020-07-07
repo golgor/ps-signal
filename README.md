@@ -15,11 +15,14 @@ Install using pip
 $ pip install .
 ```
 ## How to use
-This is a script using a Command Line Interface (CLI). Either you can run it by 
+This is a script using a Command Line Interface (CLI). Either you can run it by:
 ```
-$ python py_signal
+$ python -m py_signal
 ```
-
+or
+```
+$ ps_signal
+```
 ### Mandatory arguments
 * file - The path to a file containing data that have been exported to a .csv from the software Picoscope. The file have to be in the following format:
 
