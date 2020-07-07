@@ -2,14 +2,18 @@ import ps_signal.signal_processing as sp
 import ps_signal.cli as cli
 
 
-if __name__ == "__main__":
+def main():
     args = cli.parser.parse_args()
+
+    start_interval = args.i[0] if args.i else None
+    length_intervall = args.i[1] if args.i else None
+    title = args.t if args.t else None
 
     input_signal = sp.ps_signal(
         filename=args.file,
         id="signal3",
-        start_ms=(start_intervall := (args.i[0] if args.i else None)),
-        length_ms=(length_intervall := (args.i[1] if args.i else None)),
+        start_ms=start_interval,
+        length_ms=length_intervall,
     )
 
     if args.lp:
@@ -26,9 +30,13 @@ if __name__ == "__main__":
     if args.fft:
         input_signal.plot_fft(
             ylim=[0, 5e5],
-            title=(title := (args.t if args.t else None))
+            title=title
         )
     else:
         input_signal.plot(
-            title=(title := (args.t if args.t else None))
+            title=title
         )
+
+
+if __name__ == "__main__":
+    main()

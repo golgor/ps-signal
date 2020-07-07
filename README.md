@@ -2,15 +2,27 @@
 Module used to import .csv files made form a pico scope and analyse the data.
 
 ## How to install
-Currently no install needed, simply download and follow steps below.
-
+Clone repository
+```
+$ git clone git@github.com:golgor/ps_signal.git
+```
+Navigate to the cloned repo
+```
+$ cd ps_signal
+```
+Install using pip
+```
+$ pip install .
+```
 ## How to use
-This is a script using a Command Line Interface (CLI). Run the script by invoking:
-
+This is a script using a Command Line Interface (CLI). Either you can run it by:
 ```
-$ python py_signal
+$ python -m py_signal
 ```
-
+or
+```
+$ ps_signal
+```
 ### Mandatory arguments
 * file - The path to a file containing data that have been exported to a .csv from the software Picoscope. The file have to be in the following format:
 
@@ -33,3 +45,7 @@ Time;Channel A
 
 # Data files
 This module will work with .csv files as exported from PicoScope 6.14.x.
+
+### Other
+Using pipreqs to generate requirements.txt
+Tested using Windows Subsystem for Linux with Ubuntu Bionic (18.04.4 LTS)
