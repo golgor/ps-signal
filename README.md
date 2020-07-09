@@ -53,3 +53,6 @@ Using pipreqs to generate requirements.txt
 ### Docstrings
 Docstrings are following sphinx format according to:
 https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
+
+### Installation?
+https://github.com/pyinstaller/pyinstaller
