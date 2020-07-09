@@ -34,7 +34,7 @@ Time;Channel A
 -200,00004729;-0,73854790
 ```
 
-### Optional argument
+### Arguments
 * -h, --help - Showing a help message with all the available arguments.
 * -i lower upper - Set an interval in the x-axis (time). This can be used to isolate parts of a signal that is of interest.
 * -fff - Used to invoke running a FFT on the given signal.
@@ -43,9 +43,13 @@ Time;Channel A
 * -bs lower upper - Applying a band stop filter on the signal. Can be used to remove disturbances that is defined by a band in the frequency spectrum.
 * -o - Can be used to set an alternative output folder.
 
-# Data files
+### Data files
 This module will work with .csv files as exported from PicoScope 6.14.x.
 
-### Other
+## Other
+### Requirements
 Using pipreqs to generate requirements.txt
-Tested using Windows Subsystem for Linux with Ubuntu Bionic (18.04.4 LTS)
+
+### Docstrings
+Docstrings are following sphinx format according to:
+https://sphinx-rtd-tutorial.readthedocs.io/en/latest/docstrings.html
