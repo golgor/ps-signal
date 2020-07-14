@@ -1,5 +1,6 @@
 from setuptools import setup, find_packages
 import pathlib
+import ps_signal
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -10,7 +11,7 @@ description = "Module for parsing and analysing data from a picoscope."
 
 setup(
     name='ps_signal',
-    version='0.1.3',
+    version=ps_signal.__version__,
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',

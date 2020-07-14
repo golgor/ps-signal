@@ -19,6 +19,7 @@ bandstop_help = "Apply band stop filter to the signal. Effectively removing \
 output_help = "Folder for output. Note: Not a file but a folder as this \
                script will output several files."
 title_help = "Title that will be applied to the plot."
+version_help = "Shows the current version of this package."
 
 parser = argparse.ArgumentParser(
     description=welcome,
@@ -79,6 +80,13 @@ parser.add_argument(
     required=False,
     type=str,
     help=title_help
+)
+
+parser.add_argument(
+    "--version",
+    action="store_true",
+    required=False,
+    help=version_help
 )
 
 # For testing purposes during development only.
