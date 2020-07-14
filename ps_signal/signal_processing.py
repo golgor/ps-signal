@@ -8,7 +8,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Union
 
-
 sns.set(color_codes=True)
 
 
@@ -61,11 +60,14 @@ class PsSignal:
             sys.exit(error)
 
         # Initialization of variables that will be properties.
-        self._acc = None
-        self._time = None
-        self._t = None
-        self._fs = None
+        self._acceleration = self._data.acc
+        self._time = self._data.time - self._data.time.iloc[0]
+        self._period = round(
+            (self._time.iloc[1] - self._time.iloc[0]) / 1000, 12
+        )
+        self._sampling_frequency = int(round(1 / self.period))
 
+        # Drop data according to input from CLI
         self._drop_data(start_ms, length_ms)
 
         self._id = str(id)
@@ -84,9 +86,6 @@ class PsSignal:
         :return: Returns the time vector as a Pandas Series object.
         :rtype: pandas.core.series.Series
         """
-        if self._time is None:
-            self._time = self._data.time - self._data.time.iloc[0]
-
         return self._time
 
     @property
@@ -94,16 +93,13 @@ class PsSignal:
         """Public getter for the acceleration vector.
 
         Data from the import is assigned to another variable
-        as the self._acc might be modified with filters. This
+        as the self._acceleration might be modified with filters. This
         allows us to always have the source signal available.
 
         :return: Returns the acceleration vector as a Pandas Series object.
         :rtype: pandas.core.series.Series
         """
-        if self._acc is None:
-            self._acc = self._data.acc
-
-        return self._acc
+        return self._acceleration
 
     @property
     def period(self):
@@ -118,10 +114,7 @@ class PsSignal:
         :return: Will return the period in seconds.
         :rtype: numpy.float64
         """
-        if self._t is None:
-            self._t = round((self.time.iloc[1] - self.time.iloc[0]) / 1000, 12)
-
-        return self._t
+        return self._period
 
     @property
     def sampling_frequency(self):
@@ -134,10 +127,7 @@ class PsSignal:
         :return: Returns the samplings frequency in Hz.
         :rtype: int
         """
-        if self._fs is None:
-            self._fs = int(round(1 / self.period))
-
-        return self._fs
+        return self._sampling_frequency
 
     def _drop_data(self, start_ms: Union[int, float] = None,
                    length_ms: Union[int, float] = None) -> None:
@@ -157,12 +147,12 @@ class PsSignal:
         if start_ms:
             # Convert from shift in ms as input from cli
             # to number of samples as the data is stored.
-            start = round(start_ms * self.sampling_frequency / 1000)
+            start = round(start_ms * self._sampling_frequency / 1000)
 
             # If start is specified, remove n numbers of rows
             # starting from the beginning.
-            self.time.drop(
-                self.time.index[list(range(0, start))],
+            self._time.drop(
+                self._time.index[list(range(0, start))],
                 inplace=True
             )
 
@@ -174,13 +164,13 @@ class PsSignal:
         if length_ms:
             # Convert from shift in ms as input from cli
             # to number of samples as the data is stored.
-            length = round(length_ms * self.sampling_frequency / 1000)
+            length = round(length_ms * self._sampling_frequency / 1000)
 
             # If length is specified, drop everything after
             # length is reached. Used together with "start"
             # to specify a interval.
-            self.time.drop(
-                self.time.index[list(range(length, len(self.time)))],
+            self._time.drop(
+                self._time.index[list(range(length, len(self._time)))],
                 inplace=True
             )
 
@@ -208,7 +198,7 @@ class PsSignal:
             title = "Not set"
 
         plt.figure(figsize=(14, 10))
-        plt.plot(self.time, self.acceleration)
+        plt.plot(self._time, self.acceleration)
         plt.xlabel("Time (ms)")
         plt.ylabel("Amplitude")
         plt.title(f"{title}")
@@ -221,7 +211,7 @@ class PsSignal:
         Internal function to apply the actual FFT on the signal.
         """
         self._fft_y = fft(np.array(self.acceleration))
-        self._fft_x = fftfreq(len(self._fft_y), 1 / self.sampling_frequency)
+        self._fft_x = fftfreq(len(self._fft_y), 1 / self._sampling_frequency)
 
     def plot_fft(self, filename: str = None, title: str = None,
                  xlim: list = [10, 1200], ylim: list = None) -> None:
@@ -303,7 +293,7 @@ class PsSignal:
             defaults to "low"
         :type type: str, optional
         """
-        nyq = 0.5 * self.sampling_frequency
+        nyq = 0.5 * self._sampling_frequency
 
         # Normalize the filter around the Nyqvist frequency.
         if not type == "stop":
@@ -323,8 +313,7 @@ class PsSignal:
         # Adding the currently applied filter to a dict.
         # Dict is later used for filename generation.
         self._applied_filters[type] = cutoff
-
-        self._acc = signal.filtfilt(b, a, self.acceleration)
+        self._acceleration = signal.filtfilt(b, a, self._acceleration)
 
     def _get_filter_string(self, sep: str) -> list:
         """Internal function to the get a string of all applied filters.
