@@ -10,7 +10,7 @@ description = "Module for parsing and analysing data from a picoscope."
 
 setup(
     name='ps_signal',
-    version='0.1',
+    version='0.1.1',
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',

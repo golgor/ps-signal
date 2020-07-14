@@ -12,7 +12,7 @@ from typing import Union
 sns.set(color_codes=True)
 
 
-class ps_signal:
+class PsSignal:
     """Class for importing and analysing signals.
 
     The signals needs to be imported from a .csv file that is exported
@@ -54,32 +54,90 @@ class ps_signal:
             self._data = pd.read_csv(filename, sep=";", decimal=",",
                                      skiprows=[0, 2])
 
+            self._data.columns = ["time", "acc"]
+
         # Error if the file was not found.
         except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
             sys.exit(error)
 
-        # Shift data so it begins from 0 in case
-        # data was saved before trigger.
-        self._data.columns = ["time", "acc"]
-        self.acc = self._data.acc
-        self.time = self._data.time - self._data.time.iloc[0]
-
-        # Takes the difference between the first two data
-        # points and calculates the time difference.
-        # This assumed as the time step and used to calculate
-        # sampling frequency and period used for fft.
-        # Division by 1000 as data is normally stored in ms
-        # instead of seconds. Rounded two the 12th decimal. 8928571
-        self._t = round((self.time.iloc[1] - self.time.iloc[0]) / 1000, 12)
-        self._fs = int(round(1 / self._t))
+        # Initialization of variables that will be properties.
+        self._acc = None
+        self._time = None
+        self._t = None
+        self._fs = None
 
         self._drop_data(start_ms, length_ms)
 
-        self._n = len(self._data)
-        self.id = str(id)
-        self.fft_y = None
-        self.filt_x = None
+        self._id = str(id)
+        self._fft_y = None
+        self._fft_x = None
         self._applied_filters = {}
+
+    @property
+    def time(self):
+        """Public getter for the time vector.
+
+        Time is adjusted so first sample is at 0 ms. This might
+        not be the case if the trigger point is changed during
+        the measurements. Makes it easier to understand.
+
+        :return: Returns the time vector as a Pandas Series object.
+        :rtype: pandas.core.series.Series
+        """
+        if self._time is None:
+            self._time = self._data.time - self._data.time.iloc[0]
+
+        return self._time
+
+    @property
+    def acceleration(self):
+        """Public getter for the acceleration vector.
+
+        Data from the import is assigned to another variable
+        as the self._acc might be modified with filters. This
+        allows us to always have the source signal available.
+
+        :return: Returns the acceleration vector as a Pandas Series object.
+        :rtype: pandas.core.series.Series
+        """
+        if self._acc is None:
+            self._acc = self._data.acc
+
+        return self._acc
+
+    @property
+    def period(self):
+        """Public getter for the period of the signal. If not already calculated
+        this function will calculate it.
+
+        The period is calculated based on the time difference in time between
+        the first two samples of the imported data. Divided by 1000 as by
+        default, the time stamp from Picoscopes are given in ms.
+        Rounded to avoid floating point errors.
+
+        :return: Will return the period in seconds.
+        :rtype: numpy.float64
+        """
+        if self._t is None:
+            self._t = round((self.time.iloc[1] - self.time.iloc[0]) / 1000, 12)
+
+        return self._t
+
+    @property
+    def sampling_frequency(self):
+        """Public getter for the sampling frequency of the signal.
+
+        If not already set, this function calculates it based on
+        the inverse of the period. Rounded to integer as the
+        smallest quantization of frequency is Hz.
+
+        :return: Returns the samplings frequency in Hz.
+        :rtype: int
+        """
+        if self._fs is None:
+            self._fs = int(round(1 / self.period))
+
+        return self._fs
 
     def _drop_data(self, start_ms: Union[int, float] = None,
                    length_ms: Union[int, float] = None) -> None:
@@ -99,23 +157,37 @@ class ps_signal:
         if start_ms:
             # Convert from shift in ms as input from cli
             # to number of samples as the data is stored.
-            start = round(start_ms * self._fs / 1000)
+            start = round(start_ms * self.sampling_frequency / 1000)
 
             # If start is specified, remove n numbers of rows
             # starting from the beginning.
-            self._data.drop(self._data.index[list(range(0, start))],
-                            inplace=True)
+            self.time.drop(
+                self.time.index[list(range(0, start))],
+                inplace=True
+            )
+
+            self.acceleration.drop(
+                self.acceleration.index[list(range(0, start))],
+                inplace=True
+            )
 
         if length_ms:
             # Convert from shift in ms as input from cli
             # to number of samples as the data is stored.
-            length = round(length_ms * self._fs / 1000)
+            length = round(length_ms * self.sampling_frequency / 1000)
 
             # If length is specified, drop everything after
             # length is reached. Used together with "start"
             # to specify a interval.
-            self._data.drop(
-                self._data.index[list(range(length, len(self._data)))],
+            self.time.drop(
+                self.time.index[list(range(length, len(self.time)))],
+                inplace=True
+            )
+
+            self.acceleration.drop(
+                self.acceleration.index[
+                    list(range(length, len(self.acceleration)))
+                ],
                 inplace=True
             )
 
@@ -136,8 +208,7 @@ class ps_signal:
             title = "Not set"
 
         plt.figure(figsize=(14, 10))
-
-        plt.plot(self.time, self.acc)
+        plt.plot(self.time, self.acceleration)
         plt.xlabel("Time (ms)")
         plt.ylabel("Amplitude")
         plt.title(f"{title}")
@@ -149,8 +220,8 @@ class ps_signal:
         """
         Internal function to apply the actual FFT on the signal.
         """
-        self.fft_y = fft(np.array(self.acc))
-        self.fft_x = fftfreq(len(self.fft_y), 1 / self._fs)
+        self._fft_y = fft(np.array(self.acceleration))
+        self._fft_x = fftfreq(len(self._fft_y), 1 / self.sampling_frequency)
 
     def plot_fft(self, filename: str = None, title: str = None,
                  xlim: list = [10, 1200], ylim: list = None) -> None:
@@ -182,14 +253,18 @@ class ps_signal:
         # Applying actual FFT on the signal.
         self._apply_fft()
 
+        # Find the length of the signal. Best to do here, and not during
+        # data import as data might be dropped.
+        n = len(self.acceleration)
+
         # Using slicing as fft results are both positive and negative.
         # We are only interested in positive. Both fft and fftfreq
         # store positive data in first half of array and negative data
         # data in the second half. Thus we only plot the first
         # half of each. Division by 1000 to get KHz instad of Hz.
         plt.plot(
-            self.fft_x[: self._n // 2] / 1000,
-            abs(self.fft_y[: self._n // 2])
+            self._fft_x[: n // 2] / 1000,
+            abs(self._fft_y[: n // 2])
         )
         plt.xlabel("Frequency (KHz)")
         plt.ylabel("Amplitude")
@@ -228,7 +303,7 @@ class ps_signal:
             defaults to "low"
         :type type: str, optional
         """
-        nyq = 0.5 * self._fs
+        nyq = 0.5 * self.sampling_frequency
 
         # Normalize the filter around the Nyqvist frequency.
         if not type == "stop":
@@ -249,7 +324,7 @@ class ps_signal:
         # Dict is later used for filename generation.
         self._applied_filters[type] = cutoff
 
-        self.acc = signal.filtfilt(b, a, self.acc)
+        self.acceleration = signal.filtfilt(b, a, self.acceleration)
 
     def _get_filter_string(self, sep: str) -> list:
         """Internal function to the get a string of all applied filters.
@@ -303,7 +378,7 @@ class ps_signal:
         """
         # If no filename is provided, use the id of the signal.
         if not filename:
-            filename = self.id
+            filename = self._id
 
         filter_list = self._get_filter_string("-")
         ret = "_".join([filename, *filter_list])
