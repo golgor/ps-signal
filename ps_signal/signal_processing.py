@@ -59,12 +59,27 @@ class PsSignal:
         except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
             sys.exit(error)
 
-        # Initialization of variables that will be properties.
+        # Data from the import is assigned to another variable
+        # as the self._acceleration might be modified with filters. This
+        # allows us to always have the source signal available.
         self._acceleration = self._data.acc
+
+        # Time is adjusted so first sample is at 0 ms. This might
+        # not be the case if the trigger point is changed during
+        # the measurements. Makes it easier to understand.
         self._time = self._data.time - self._data.time.iloc[0]
+
+        # The period is calculated based on the time difference in time between
+        # the first two samples of the imported data. Divided by 1000 as by
+        # default, the time stamp from Picoscopes are given in ms.
+        # Rounded to avoid floating point errors.
         self._period = round(
             (self._time.iloc[1] - self._time.iloc[0]) / 1000, 12
         )
+
+        # this function calculates it based on
+        # the inverse of the period. Rounded to integer as the
+        # smallest quantization of frequency is Hz.
         self._sampling_frequency = int(round(1 / self.period))
 
         # Drop data according to input from CLI
@@ -79,10 +94,6 @@ class PsSignal:
     def time(self):
         """Public getter for the time vector.
 
-        Time is adjusted so first sample is at 0 ms. This might
-        not be the case if the trigger point is changed during
-        the measurements. Makes it easier to understand.
-
         :return: Returns the time vector as a Pandas Series object.
         :rtype: pandas.core.series.Series
         """
@@ -92,10 +103,6 @@ class PsSignal:
     def acceleration(self):
         """Public getter for the acceleration vector.
 
-        Data from the import is assigned to another variable
-        as the self._acceleration might be modified with filters. This
-        allows us to always have the source signal available.
-
         :return: Returns the acceleration vector as a Pandas Series object.
         :rtype: pandas.core.series.Series
         """
@@ -103,13 +110,7 @@ class PsSignal:
 
     @property
     def period(self):
-        """Public getter for the period of the signal. If not already calculated
-        this function will calculate it.
-
-        The period is calculated based on the time difference in time between
-        the first two samples of the imported data. Divided by 1000 as by
-        default, the time stamp from Picoscopes are given in ms.
-        Rounded to avoid floating point errors.
+        """Public getter for the period of the signal.
 
         :return: Will return the period in seconds.
         :rtype: numpy.float64
@@ -119,10 +120,6 @@ class PsSignal:
     @property
     def sampling_frequency(self):
         """Public getter for the sampling frequency of the signal.
-
-        If not already set, this function calculates it based on
-        the inverse of the period. Rounded to integer as the
-        smallest quantization of frequency is Hz.
 
         :return: Returns the samplings frequency in Hz.
         :rtype: int
