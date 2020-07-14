@@ -17,7 +17,7 @@ $ pip install .
 ## How to use
 This is a script using a Command Line Interface (CLI). Either you can run it by:
 ```
-$ python -m py_signal
+$ python -m ps_signal
 ```
 or
 ```
