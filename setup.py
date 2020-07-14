@@ -14,7 +14,7 @@ setup(
     description=description,
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/golgor/ps_signal',
+    url='https://github.com/golgor/ps-signal',
     author='Robert Nyström',
     author_email='golgafrincham@gmail.com',
     classifiers=[
