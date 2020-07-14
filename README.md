@@ -42,6 +42,7 @@ Time;Channel A
 * -hp cutoff - Applying a high pass filter on the singal. Can be used to remove low frequency disturbances.
 * -bs lower upper - Applying a band stop filter on the signal. Can be used to remove disturbances that is defined by a band in the frequency spectrum.
 * -o - Can be used to set an alternative output folder.
+* --version - Prints the current version of the package.
 
 ### Data files
 This module will work with .csv files as exported from PicoScope 6.14.x.
