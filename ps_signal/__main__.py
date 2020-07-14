@@ -1,13 +1,9 @@
 from ps_signal.signal_processing import PsSignal
 import ps_signal.cli as cli
-import ps_signal
 
 
 def main():
     args = cli.parser.parse_args()
-
-    if args.version:
-        print(ps_signal.__version__)
 
     start_interval = args.i[0] if args.i else None
     length_intervall = args.i[1] if args.i else None

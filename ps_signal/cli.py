@@ -1,5 +1,5 @@
 import argparse
-
+import ps_signal
 
 welcome = "Python script for performing FFT and plotting \
            .csv data aquired from a Picoscope."
@@ -28,6 +28,7 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "file",
     metavar="file",
+    nargs="*",
     help=file_help
 )
 parser.add_argument(
@@ -83,11 +84,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--version",
-    action="store_true",
-    required=False,
+    '--version',
+    action='version',
+    version=ps_signal.__version__,
     help=version_help
 )
+
 
 # For testing purposes during development only.
 if __name__ == "__main__":
