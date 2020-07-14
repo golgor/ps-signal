@@ -91,25 +91,25 @@ class PsSignal:
         self._applied_filters = {}
 
     @property
-    def time(self):
+    def time(self) -> pd.Series:
         """Public getter for the time vector.
 
         :return: Returns the time vector as a Pandas Series object.
-        :rtype: pandas.core.series.Series
+        :rtype: pd.Series
         """
         return self._time
 
     @property
-    def acceleration(self):
+    def acceleration(self) -> pd.Series:
         """Public getter for the acceleration vector.
 
         :return: Returns the acceleration vector as a Pandas Series object.
-        :rtype: pandas.core.series.Series
+        :rtype: pd.Series
         """
         return self._acceleration
 
     @property
-    def period(self):
+    def period(self) -> np.float64:
         """Public getter for the period of the signal.
 
         :return: Will return the period in seconds.
@@ -118,7 +118,7 @@ class PsSignal:
         return self._period
 
     @property
-    def sampling_frequency(self):
+    def sampling_frequency(self) -> int:
         """Public getter for the sampling frequency of the signal.
 
         :return: Returns the samplings frequency in Hz.
