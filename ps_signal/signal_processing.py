@@ -324,7 +324,7 @@ class PsSignal:
         # Dict is later used for filename generation.
         self._applied_filters[type] = cutoff
 
-        self.acceleration = signal.filtfilt(b, a, self.acceleration)
+        self._acc = signal.filtfilt(b, a, self.acceleration)
 
     def _get_filter_string(self, sep: str) -> list:
         """Internal function to the get a string of all applied filters.
