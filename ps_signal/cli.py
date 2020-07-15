@@ -28,7 +28,6 @@ parser = argparse.ArgumentParser(
 parser.add_argument(
     "file",
     metavar="file",
-    nargs="*",
     help=file_help
 )
 parser.add_argument(
