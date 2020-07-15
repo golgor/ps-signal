@@ -17,7 +17,7 @@ class VerbosePrinter:
 
             if self.timer:
                 elapsed_time = perf_counter() - start
-                print(f"Elapsed time: {elapsed_time} seconds")
+                print(f"Elapsed time: {elapsed_time:.2f} seconds")
             print("="*50)
             return ret
         return inner
