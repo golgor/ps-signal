@@ -1,5 +1,5 @@
-from ps_signal.signal_processing import PsSignal
-import ps_signal.cli as cli
+from signal_processing import PsSignal
+import cli
 
 
 def main():
