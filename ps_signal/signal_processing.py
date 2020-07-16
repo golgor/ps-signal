@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Union
-from decorators import VerbosePrinter
+from ps_signal.decorators import VerbosePrinter
 
 sns.set(color_codes=True)
 
