@@ -1,5 +1,9 @@
-from signal_processing import PsSignal
-import cli
+try:
+    import signal_processing as sp
+    import cli as cli
+except ImportError:
+    import ps_signal.signal_processing as sp
+    import ps_signal.cli as cli
 
 
 def main():
@@ -9,7 +13,7 @@ def main():
     length_intervall = args.i[1] if args.i else None
     title = args.t if args.t else None
 
-    input_signal = PsSignal(
+    input_signal = sp.PsSignal(
         filename=args.file,
         id="signal3",
         start_ms=start_interval,
