@@ -39,7 +39,8 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test Execute
       run: |
-        python -m ps_signal -h
+        # python -m ps_signal -h
+        ps_signal -h
         
 #    - name: Test with pytest
 #      run: |
