@@ -7,17 +7,17 @@ class VerbosePrinter:
         self.text = text
 
     def __call__(self, fn):
-        @wraps
+        @wraps(fn)
         def inner(*args, **kwargs):
             from time import perf_counter
+
+            if self.text:
+                print(self.text.center(50, "="))
 
             if self.timer:
                 start = perf_counter()
 
             ret = fn(*args, **kwargs)
-
-            if self.text:
-                print(self.text.center(50, "="))
 
             if self.timer:
                 elapsed_time = perf_counter() - start

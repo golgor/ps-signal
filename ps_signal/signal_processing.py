@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from typing import Union
-from ps_signal.decorators import VerbosePrinter
+
 
 sns.set(color_codes=True)
 
@@ -22,7 +22,6 @@ class PsSignal:
     Output files will be generated in a .png-format depending on the
     parameters given for each method in this class.
     """
-    @VerbosePrinter(True, "Importing data")
     def __init__(self, filename: str, id: str,
                  start_ms: Union[int, float] = None,
                  length_ms: Union[int, float] = None) -> None:
@@ -180,7 +179,6 @@ class PsSignal:
                 inplace=True
             )
 
-    @VerbosePrinter(True, "Plotting data")
     def plot(self, filename: str = None, title: str = None) -> None:
         """Plotting the imported signal and saves it to disk.
 
