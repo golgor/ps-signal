@@ -41,6 +41,6 @@ setup(
     # package_data={},
     # data_files=[],
     entry_points={
-        'console_scripts': ['ps_signal = ps_signal.__main__:main']
+        'console_scripts': ['ps-signal = ps_signal.__main__:main']
     },
 )
