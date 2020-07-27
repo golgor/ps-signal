@@ -8,7 +8,7 @@ from .interfaces import cli
 
 
 def main():
-    cli.process_cli_args()
+    cli.process_args()
     # for k in dict(globals()).keys():
     #     print(k)
 

@@ -1,10 +1,10 @@
 from . import cli_conf
 
 
-__all__ = ['process_cli_args']
+__all__ = ['process_args']
 
 
-def process_cli_args():
+def process_args():
     args = cli_conf.parse_args()
     print(args)
 
