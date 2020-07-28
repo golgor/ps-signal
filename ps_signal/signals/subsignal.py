@@ -1,3 +1,4 @@
+import pandas as pd
 from .signal import Signal
 
 
@@ -13,3 +14,11 @@ class SubSignal(Signal):
             pass
         else:
             return NotImplemented
+
+
+def split_signal(signal: Signal, start: int, end: int) -> pd.DataFrame:
+    """Funktion för att isolera ett subset ur den grundläggande signalen.
+    Input är ett Signal-objekt och ett intervall givet i ms. Output är ett
+    nytt signalobjekt men med annorlunda sample i.
+    """
+    pass

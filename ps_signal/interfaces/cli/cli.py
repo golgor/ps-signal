@@ -1,16 +1,20 @@
 from . import cli_conf
-
+from ... import signals
 
 __all__ = ['process_args']
 
 
 def process_args():
     args = cli_conf.parse_args()
-    print(args)
 
-    start_interval = args.i[0] if args.i else None
-    length_intervall = args.i[1] if args.i else None
-    title = args.t if args.t else None
+    input_signal = signals.Signal(
+        filename=args.file,
+        id="Signal1"
+    )
+    print(input_signal)
+    # start_interval = args.i[0] if args.i else None
+    # length_intervall = args.i[1] if args.i else None
+    # title = args.t if args.t else None
 
     # input_signal = sp.PsSignal(
     #     filename=args.file,
