@@ -1,5 +1,9 @@
-__all__ = ['test_gui']
+__all__ = ['run_gui']
 
 
-def test_gui():
-    print("Running gui.py")
+def run_gui():
+    print("GUI not implemented yet!")
+
+
+def gui_helper():
+    pass

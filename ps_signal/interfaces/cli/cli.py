@@ -1,10 +1,10 @@
 from . import cli_conf
 from ... import signals
 
-__all__ = ['process_args']
+__all__ = ['run_cli']
 
 
-def process_args():
+def run_cli():
     args = cli_conf.parse_args()
 
     input_signal = signals.Signal(

@@ -2,23 +2,27 @@
 # import ps_signal.cli as cli
 
 
-from . import validators
-from . import signals
-from .interfaces import cli
+from . import interfaces
+
+
+def print_globals():
+    for k in dict(globals()).keys():
+        print(k)
+
+
+def print_namespace(namespace):
+    for k in namespace.__dict__.keys():
+        print(k)
 
 
 def main():
-    cli.process_args()
-    # for k in dict(globals()).keys():
-    #     print(k)
+    interfaces.run_cli()
 
-    # print("\nFor ps_signal")
-    # for k in signal.__dict__.keys():
-    #     print(k)
+    # print("\nGlobals")
+    # print_globals()
 
-    # print("\nFor common")
-    # for k in ps_signal.signal.__dict__.keys():
-    #     print(k)
+    # print("\ninterfaces")
+    # print_namespace(interfaces)
 
     # signal.fft.perform_fft_on_signal()
     # signal.filter.apply_low_pass_filter()
