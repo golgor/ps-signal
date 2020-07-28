@@ -3,7 +3,7 @@
 
 
 from . import validators
-from . import signal
+from . import signals
 from .interfaces import cli
 
 

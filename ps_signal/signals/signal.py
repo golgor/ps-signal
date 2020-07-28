@@ -2,7 +2,7 @@ import pandas as pd
 import sys
 import xlrd
 
-__all__ = ['Signal', 'SubSignal']
+__all__ = ['Signal']
 
 
 class Signal:
@@ -27,15 +27,6 @@ class Signal:
     @property
     def period(self):
         return self._period
-
-
-class SubSignal(Signal):
-    def __init__(self, signal, interval):
-        if isinstance(signal, Signal):
-            # Create a subset of the signal using split_signal()
-            pass
-        else:
-            return NotImplemented
 
 
 def load_data(filename: str) -> pd.DataFrame:
