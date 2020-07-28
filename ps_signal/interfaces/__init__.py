@@ -3,7 +3,4 @@ from .cli import *
 from .gui import *
 
 
-__all__ = (
-    cli.__all__,
-    gui.__all__
-)
+__all__ = (cli.__all__ + gui.__all__)
