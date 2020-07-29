@@ -1,7 +1,7 @@
 import pandas as pd
 import sys
 import xlrd
-
+import matplotlib.pyplot as plt
 
 __all__ = ["Signal"]
 
@@ -9,6 +9,7 @@ __all__ = ["Signal"]
 class Signal:
     def __init__(self, id: str):
         self._id = id
+        self._data = None
 
     def load_data(self, filename: str):
         self._filename = filename
@@ -24,12 +25,21 @@ class Signal:
 
     def __repr__(self) -> str:
         return (
-            self._id.center(50, "=")
-            + f"\nData source: {self._filename}\n"
-            + f"Memory usage: {self.memory_usage_mb}MB\n"
-            + f"Sampling frequency: {self._frequency_hz}Hz\n"
-            + f"Sampling period: {self._period}s"
+            f"{self._id.center(50, '=')}"
+            f"\nData source: {self._filename}\n"
+            f"Memory usage: {self.memory_usage_mb}MB\n"
+            f"Sampling frequency: {self._frequency_hz}Hz\n"
+            f"Sampling period: {self._period}s"
         )
+
+    def plot(self):
+        if self._data is not None:
+            plt.plot(self._data['time'], self._data['acc'])
+            plt.savefig(f"{self._id}.png")
+        else:
+            raise ValueError(
+                f"No data is loaded for {self._id}"
+            )
 
     @property
     def filename(self):

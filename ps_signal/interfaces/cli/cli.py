@@ -19,7 +19,7 @@ def run_cli():
         end_intervall = args.i[1]
 
         subsignal_1 = SubSignal(id="Subsignal_1")
-        subsignal_1.load_signal(
+        subsignal_1.load_data(
             input_signal,
             start_ms=start_interval,
             end_ms=end_intervall

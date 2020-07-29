@@ -1,6 +1,5 @@
 import pandas as pd
 from .signal import Signal
-import matplotlib.pyplot as plt
 
 
 __all__ = ['SubSignal']
@@ -10,23 +9,16 @@ class SubSignal(Signal):
     # Redefine the init function as it should now load data from a
     # file, but create subsets of already imported data
     def __init__(self, id: str):
-        self._id = id
-        self._data = None
+        super().__init__(id)
 
-    def load_signal(self, signal, start_ms=None, end_ms=None):
+    def load_data(self, signal, start_ms=None, end_ms=None):
         if isinstance(signal, Signal):
-            self._data = get_slice(signal, start_ms, end_ms)
+            if start_ms or end_ms:
+                self._data = get_slice(signal, start_ms, end_ms)
+            else:
+                self._data = signal.data
         else:
             return NotImplemented
-
-    def plot(self):
-        if self._data is not None:
-            plt.plot(self._data['time'], self._data['acc'])
-            plt.savefig("test.png")
-        else:
-            raise ValueError(
-                f"No signal has been loaded for SubSignal {self._id}"
-            )
 
 
 def get_slice(signal: Signal, start_ms: int = None, end_ms: int = None) -> pd.DataFrame:
