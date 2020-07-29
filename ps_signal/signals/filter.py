@@ -4,6 +4,9 @@ from . import signal
 __all__ = ['apply_low_pass_filter']
 
 
+# TODO: Create a filter class
+
+
 def apply_low_pass_filter():
     """ Applying a low pass filter on a Signal objekt"""
     test = signal.Signal()
