@@ -6,7 +6,7 @@ __all__ = ['SubSignal']
 
 
 class SubSignal(Signal):
-    # Redefine the init function as it should now load data from a
+    # Redefine the init function as it should not load data from a
     # file, but create subsets of already imported data
     def __init__(self, id: str):
         super().__init__(id)
@@ -17,6 +17,10 @@ class SubSignal(Signal):
                 self._data = get_slice(signal, start_ms, end_ms)
             else:
                 self._data = signal.data
+            # Calculate various properties for the signal.
+            # Most things are constant, but for example signal length
+            # is changed, which would corrupt the fft.
+            super()._prepare_signal(remove_offset=False)
         else:
             return NotImplemented
 

@@ -2,6 +2,7 @@ import pandas as pd
 import sys
 import xlrd
 import matplotlib.pyplot as plt
+from . import fft
 
 __all__ = ["Signal"]
 
@@ -16,30 +17,52 @@ class Signal:
         self._data = load_data(filename)
         self._prepare_signal()
 
-    def _prepare_signal(self):
-        self._data = remove_trigger_offset(self._data)
+    def _prepare_signal(self, remove_offset: bool = True):
+        if remove_offset:
+            self._data = remove_trigger_offset(self._data)
+
         self._frequency_hz = calculate_sampling_frequency(self._data)
         self._period = 1 / self._frequency_hz
         self._sample_size = len(self._data)
+        self._sample_time = self._sample_size * self._period
         self._memory_usage = self._data.memory_usage(index=True, deep=True)
 
     def __repr__(self) -> str:
         return (
             f"{self._id.center(50, '=')}"
-            f"\nData source: {self._filename}\n"
             f"Memory usage: {self.memory_usage_mb}MB\n"
             f"Sampling frequency: {self._frequency_hz}Hz\n"
-            f"Sampling period: {self._period}s"
+            f"Sampling period: {self._period}s\n"
+            f"Number of samples: {self._sample_size}\n"
+            f"Total time: {self._sample_time}s"
         )
+
+    def fft(self):
+        self._fft = fft.perform_fft_on_signal(self)
+        self.plot_fft()
 
     def plot(self):
         if self._data is not None:
             plt.plot(self._data['time'], self._data['acc'])
             plt.savefig(f"{self._id}.png")
+            plt.close()
         else:
             raise ValueError(
                 f"No data is loaded for {self._id}"
             )
+
+    def plot_fft(self):
+        plt.figure(figsize=(14, 10))
+        plt.plot(self._fft.x, self._fft.y)
+        plt.autoscale(enable=True, axis="y", tight=True)
+        plt.ylim([0, 500000])
+        plt.xlim([0, 2000])
+        plt.savefig(f"{self._id}-fft.png")
+        plt.close()
+
+    @property
+    def id(self):
+        return self._id
 
     @property
     def filename(self):

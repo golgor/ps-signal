@@ -11,7 +11,9 @@ def run_cli():
 
     input_signal = Signal(id="Signal1")
     input_signal.load_data(filename=args.file)
-
+    print(input_signal)
+    input_signal.plot()
+    input_signal.fft()
     # title = args.t if args.t else None
 
     if args.i:
@@ -24,14 +26,9 @@ def run_cli():
             start_ms=start_interval,
             end_ms=end_intervall
         )
+        print(subsignal_1)
         subsignal_1.plot()
-
-    # input_signal = sp.PsSignal(
-    #     filename=args.file,
-    #     id="signal3",
-    #     start_ms=start_interval,
-    #     length_ms=length_intervall,
-    # )
+        subsignal_1.fft()
 
     # if args.lp:
     #     # Perform low pass filtering
