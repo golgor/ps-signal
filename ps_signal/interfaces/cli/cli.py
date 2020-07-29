@@ -1,5 +1,7 @@
 from . import cli_conf
-from ... import signals
+from ...signals.signal import Signal
+from ...signals.subsignal import SubSignal
+
 
 __all__ = ['run_cli']
 
@@ -7,14 +9,22 @@ __all__ = ['run_cli']
 def run_cli():
     args = cli_conf.parse_args()
 
-    input_signal = signals.Signal(
-        filename=args.file,
-        id="Signal1"
-    )
-    print(input_signal)
-    # start_interval = args.i[0] if args.i else None
-    # length_intervall = args.i[1] if args.i else None
+    input_signal = Signal(id="Signal1")
+    input_signal.load_data(filename=args.file)
+
     # title = args.t if args.t else None
+
+    if args.i:
+        start_interval = args.i[0]
+        end_intervall = args.i[1]
+
+        subsignal_1 = SubSignal(id="Subsignal_1")
+        subsignal_1.load_signal(
+            input_signal,
+            start_ms=start_interval,
+            end_ms=end_intervall
+        )
+        subsignal_1.plot()
 
     # input_signal = sp.PsSignal(
     #     filename=args.file,
