@@ -1,7 +1,5 @@
 from . import cli_conf
-from ...signals.signal import Signal
-from ...signals.subsignal import SubSignal
-
+from ... import signals
 
 __all__ = ['run_cli']
 
@@ -9,18 +7,25 @@ __all__ = ['run_cli']
 def run_cli():
     args = cli_conf.parse_args()
 
-    input_signal = Signal(id="Signal1")
+    input_signal = signals.Signal(id="Signal1")
     input_signal.load_data(filename=args.file)
     print(input_signal)
+
     input_signal.plot()
     input_signal.fft()
+
+    signals.bandstop_filter(input_signal, 250_000, 500_000, inplace=True)
+
+    input_signal.plot()
+    input_signal.fft()
+
     # title = args.t if args.t else None
 
     if args.i:
         start_interval = args.i[0]
         end_intervall = args.i[1]
 
-        subsignal_1 = SubSignal(id="Subsignal_1")
+        subsignal_1 = signals.SubSignal(id="Subsignal_1")
         subsignal_1.load_data(
             input_signal,
             start_ms=start_interval,

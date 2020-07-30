@@ -38,6 +38,7 @@ class Signal:
         )
 
     def fft(self):
+        print(f"Performing FFT on {self._id}")
         self._fft = fft.perform_fft_on_signal(self)
         self.plot_fft()
 

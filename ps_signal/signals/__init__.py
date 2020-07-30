@@ -1,12 +1,5 @@
 # Signal init
 from .signal import *
 from .subsignal import *
-from .filter import *
+from .filters import *
 from .plot import *
-
-__all__ = (
-    signal.__all__ +
-    subsignal.__all__ +
-    filter.__all__ +
-    plot.__all__
-)
