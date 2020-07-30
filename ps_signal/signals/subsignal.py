@@ -25,7 +25,8 @@ class SubSignal(Signal):
             return NotImplemented
 
 
-def get_slice(signal: Signal, start_ms: int = None, end_ms: int = None) -> pd.DataFrame:
+def get_slice(signal: Signal, start_ms: int = None,
+              end_ms: int = None) -> pd.DataFrame:
     """Helper function that will return a slice of a Signal. Intended to
     be used to isolate a SubSignal from a Signal.
 
