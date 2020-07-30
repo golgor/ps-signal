@@ -3,6 +3,8 @@ import sys
 import xlrd
 import matplotlib.pyplot as plt
 from . import fft
+import seaborn as sns
+sns.set(color_codes=True)
 
 
 __all__ = ["Signal"]
