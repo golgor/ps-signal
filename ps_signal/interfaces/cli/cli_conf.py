@@ -29,6 +29,9 @@ def initialize_args_parser() -> argparse.ArgumentParser:
     parser.add_argument("-bs", metavar=("lower", "upper"), nargs=2,
                         required=False, type=float, help=s.bandstop)
 
+    parser.add_argument("-bp", metavar=("lower", "upper"), nargs=2,
+                        required=False, type=float, help=s.bandpass)
+
     parser.add_argument("-o", metavar="dir", required=False, type=int,
                         help=s.output)
 

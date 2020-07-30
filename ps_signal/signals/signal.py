@@ -4,6 +4,7 @@ import xlrd
 import matplotlib.pyplot as plt
 from . import fft
 
+
 __all__ = ["Signal"]
 
 
@@ -11,6 +12,8 @@ class Signal:
     def __init__(self, id: str):
         self._id = id
         self._data = None
+        self._applied_filters = list()
+        self._output_filename = str(self._id)
 
     def load_data(self, filename: str):
         self._filename = filename
@@ -38,14 +41,13 @@ class Signal:
         )
 
     def fft(self):
-        print(f"Performing FFT on {self._id}")
         self._fft = fft.perform_fft_on_signal(self)
-        self.plot_fft()
 
     def plot(self):
         if self._data is not None:
             plt.plot(self._data['time'], self._data['acc'])
-            plt.savefig(f"{self._id}.png")
+            plt.title(f"{self._id}\n{self.filter_string}")
+            plt.savefig(f"{self.output_filename}.png")
             plt.close()
         else:
             raise ValueError(
@@ -53,13 +55,18 @@ class Signal:
             )
 
     def plot_fft(self):
+        self.fft()
         plt.figure(figsize=(14, 10))
         plt.plot(self._fft.x, self._fft.y)
         plt.autoscale(enable=True, axis="y", tight=True)
         plt.ylim([0, 500000])
         plt.xlim([0, 2000])
-        plt.savefig(f"{self._id}-fft.png")
+        plt.title(f"FFT of {self._id}\n{self.filter_string}")
+        plt.savefig(f"{self.output_filename}-fft.png")
         plt.close()
+
+    def _add_filter(self, filter):
+        self._applied_filters.append(filter)
 
     @property
     def id(self):
@@ -94,6 +101,20 @@ class Signal:
     def memory_usage_kb(self) -> int:
         memory_kb = round(sum(self._memory_usage / 1000), 3)
         return int(memory_kb)
+
+    @property
+    def output_filename(self) -> str:
+        if self.filter_string:
+            return self._output_filename + "-" + self.filter_string
+        return self._output_filename
+
+    @property
+    def filter_string(self):
+        if self._applied_filters:
+            filter_str = [repr(filter) for filter in self._applied_filters]
+            return "-".join(filter_str)
+        else:
+            return ""
 
 
 def load_data(filename: str) -> pd.DataFrame:

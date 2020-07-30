@@ -46,6 +46,12 @@ def get_slice(signal: Signal, start_ms: int = None, end_ms: int = None) -> pd.Da
 
     start_sample_count = round((start_ms / 1000) * signal.frequency_hz)
     end_sample_count = round((end_ms / 1000) * signal.frequency_hz)
-    return signal.data.iloc[
+
+    # Creating a subset of a COPY of the DataFrame. Important to make a copy
+    # and not assignment with '=' as assignment '=' can result in only
+    # creating a reference rather than a fresh copy. I.e. risk of modifying
+    # the original when the "copy" is modified.
+    # https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
+    return signal.data.copy().iloc[
         start_sample_count: end_sample_count
     ]

@@ -25,15 +25,30 @@ class Filter:
 
             if inplace:
                 self._filter_fn(signal, cutoff, cutoff_upper)
-                signal._id = signal._id + "-filtered"
+                signal._add_filter(self)
                 return None
             else:
                 new_signal = deepcopy(signal)
-                new_signal._id = signal._id + "-filtered"
+                signal._add_filter(self)
                 return self._filter_fn(new_signal, cutoff, cutoff_upper)
         else:
             print("Can't apply filter to object"
                   "that is not instances of Signal()")
+
+    def __str__(self):
+        return "Tjosan"
+
+    def __repr__(self):
+        if not self._cutoff_upper:
+            return f"{self._filter_type}_{self._cutoff:.3g}"
+        else:
+
+            return (f"{self._filter_type}"
+                    "_("
+                    f"{self._cutoff:.3g}"
+                    "-"
+                    f"{self._cutoff_upper:.3g}"
+                    ")")
 
 
 def apply_low_pass_filter(signal, cutoff, cutoff_upper=None):
@@ -77,12 +92,7 @@ def apply_band_pass_filter(signal, cutoff, cutoff_upper=None):
 
 def apply_band_stop_filter(signal, cutoff, cutoff_upper=None):
     nyq = 0.5 * signal.frequency_hz
-    print(signal.frequency_hz)
-    print(f"Cutoff: {cutoff}")
-    print(f"Cutoff_upper: {cutoff_upper}")
     normalized_cutoff = [cutoff / nyq for cutoff in (cutoff, cutoff_upper)]
-    print(f"Norm_Cutoff: {normalized_cutoff[0]}")
-    print(f"Norm_Cutoff_upper: {normalized_cutoff[1]}")
     b, a = butter(
         5,
         normalized_cutoff,

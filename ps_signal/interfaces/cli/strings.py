@@ -13,6 +13,9 @@ highpass = "Apply high pass filter to the signal. Effectively \
 bandstop = "Apply band stop filter to the signal. Effectively removing \
                  frequencies that is between the specified frequencies. \
                  Cutoff given in Hz."
+bandpass = "Apply band pass filter to the signal. Effectively removing \
+                 all frequencies that is not between the specified \
+                 frequencies. Cutoff given in Hz."
 output = "Folder for output. Note: Not a file but a folder as this \
                script will output several files."
 title = "Title that will be applied to the plot."
