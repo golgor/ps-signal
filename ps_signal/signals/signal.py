@@ -10,6 +10,18 @@ sns.set(color_codes=True)
 __all__ = ["Signal"]
 
 
+# TODO: Have one class for Signal and one class for "Data".
+# Data is the imported data using pd.csv reader.
+# Every object of Signal is initiated with an instance
+# of Data class such as self._data = Data(args, kwargs).
+# This would be using a "factory"-design pattern?
+# Data changes (intervals), everything else is the same
+# for different signals methods for FFT and filters.
+# Creating data class with importing a file for data
+# Can have methods for returning a subset of data.
+# Also file loader can be a class, so it is easier to
+# add additional file types. Instantiate a Dataclass by
+# using a FileLoader instance.
 class Signal:
     def __init__(self, id: str):
         self._id = id
