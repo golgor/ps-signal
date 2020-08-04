@@ -1,10 +1,9 @@
 import pandas as pd
 import sys
+from scipy.fft import test
 import xlrd
-import matplotlib.pyplot as plt
 from . import fft
-import seaborn as sns
-sns.set(color_codes=True)
+from . import plot
 
 
 __all__ = ["Signal"]
@@ -28,6 +27,7 @@ class Signal:
         self._data = None
         self._applied_filters = list()
         self._output_filename = str(self._id)
+        self._fft = None
 
     def load_data(self, filename: str):
         self._filename = filename
@@ -54,30 +54,32 @@ class Signal:
             f"Total time: {self._sample_time}s"
         )
 
-    def fft(self):
-        self._fft = fft.perform_fft_on_signal(self)
+    def calc_fft(self):
+        if not self._fft:
+            self._fft = fft.perform_fft_on_signal(self)
 
-    def plot(self):
-        if self._data is not None:
-            plt.plot(self._data['time'], self._data['acc'])
-            plt.title(f"{self._id}\n{self.filter_string}")
-            plt.savefig(f"{self.output_filename}.png")
-            plt.close()
-        else:
-            raise ValueError(
-                f"No data is loaded for {self._id}"
+    def plot_signal(self):
+        try:
+            plot.plot_data(
+                signal=self,
+                style='time_series'
             )
+        except AttributeError as error:
+            print(error)
+        except Exception as error:
+            print(error)
 
     def plot_fft(self):
-        self.fft()
-        plt.figure(figsize=(14, 10))
-        plt.plot(self._fft.x, self._fft.y)
-        plt.autoscale(enable=True, axis="y", tight=True)
-        plt.ylim([0, 500000])
-        plt.xlim([0, 2000])
-        plt.title(f"FFT of {self._id}\n{self.filter_string}")
-        plt.savefig(f"{self.output_filename}-fft.png")
-        plt.close()
+        try:
+            plot.plot_data(
+                signal=self,
+                style='fft'
+            )
+        except AttributeError as error:
+            print(error)
+            print("Likely caused by not running calc_fft first!")
+        except Exception as error:
+            print(error)
 
     def _add_filter(self, filter):
         self._applied_filters.append(filter)

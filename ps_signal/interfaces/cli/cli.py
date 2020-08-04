@@ -53,6 +53,7 @@ def run_cli():
         )
 
     if args.fft:
+        input_signal.calc_fft()
         input_signal.plot_fft()
     else:
-        input_signal.plot()
+        input_signal.plot_signal()
