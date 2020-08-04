@@ -1,6 +1,5 @@
 import pandas as pd
 import sys
-from scipy.fft import test
 import xlrd
 from . import fft
 from . import plot

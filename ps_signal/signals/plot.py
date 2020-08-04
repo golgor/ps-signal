@@ -37,9 +37,9 @@ def plot_time_series(*, signal, **kwargs):
     ax = plt.axes(
         xlabel="Time (ms)",
         ylabel="Amplitude",
-        title="Time series"
+        title=f"Time series\nApplied filters: {signal.filter_string}"
     )
-    fig.suptitle("Test")
+    fig.suptitle(signal.id)
     plt.plot(signal.data.time, signal.data.acc, figure=fig, axes=ax)
 
     plt.savefig(f"{signal.output_filename}.png")
@@ -55,11 +55,11 @@ def plot_fft(*, signal, **kwargs):
     ax = plt.axes(
         xlabel="Frequency",
         ylabel="Amplitude",
-        title="FFT",
+        title=f"FFT\nApplied filters: {signal.filter_string}",
         xlim=(0, 2_000),
         ylim=(0, 500_000)
     )
-    fig.suptitle("Test")
+    fig.suptitle(signal.id)
     plt.plot(signal._fft.x, signal._fft.y, figure=fig, axes=ax)
 
     plt.savefig(f"{signal.output_filename}-fft.png")
