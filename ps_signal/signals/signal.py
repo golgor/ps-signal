@@ -1,3 +1,9 @@
+"""Module for the Signal class.
+
+.. todo::
+    Documentation in the signal module.
+
+"""
 from . import fft
 from . import plot
 

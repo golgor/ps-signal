@@ -32,7 +32,8 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.viewcode",
     "sphinx.ext.doctest",
-    "sphinx.ext.napoleon"
+    "sphinx.ext.napoleon",
+    "sphinx.ext.todo"
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,3 +70,8 @@ napoleon_use_ivar = False
 napoleon_use_param = True
 napoleon_use_rtype = True
 napoleon_type_aliases = None
+
+#  Todo items configuration
+todo_include_todos = True
+todo_emit_warnings = True
+todo_link_only = True

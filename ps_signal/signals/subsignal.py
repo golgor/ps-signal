@@ -2,6 +2,10 @@
 
 .. deprecated:: 0.1.6
     Use :class:`Data` and :func:`slice_data` instead.
+
+.. todo::
+    Removal of the subsignal module.
+
 """
 import pandas as pd
 from .signal import Signal
