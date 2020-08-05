@@ -2,21 +2,12 @@ Welcome to the documentation about ps-signal!
 =============================================
 
 .. toctree::
-   :maxdepth: 2
+   :caption: Table of Contents
+   :maxdepth: 10
 
-   modules
+   ps_signal
    license
    testing
-
-ps-signal main
-===================
-.. automodule::modules
-  :members:
-
-cli interface
-===================
-.. automodule::ps\_signal.interfaces.cli
-  :members:
 
 Indices and tables
 ==================

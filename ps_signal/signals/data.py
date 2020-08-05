@@ -1,27 +1,41 @@
+"""Module that contains the Data class and methods that is
+used to read data from disk and store them as Pandas.DataFrame.
+"""
 import pandas as pd
 import sys
 import xlrd
 import copy
-from time import perf_counter
-
-__all__ = ["Data", "slice_data"]
 
 
 def picoscope_data_loader(filename: str) -> pd.DataFrame:
-    """Loading the data from a file. Custom file loader
-    made for loading files exported from picoscope as a .csv
+    """Custom file loader for loading a file from disk. This file
+    loader is made for loading files exported from picoscope as
+    a .csv.
 
-    :param filename: [description]
-    :type filename: str
-    :return: [description]
-    :rtype: pd.Dataframe
+    Args:
+        filename (str): The path to the file that should be imported.
+
+    Returns:
+        pd.DataFrame: A pandas.DataFrame containing all the data.
+
+    Important:
+        The supported file format for this loader is according to below.
+        This is the standard when exporting a .csv from PicoScope Software.
+        Note the ' ; ' as delimiter and ' , ' as decimal point.
+
+        .. code-block::
+
+            Tid;Kanal A
+            (ms);(mV)
+
+            -200,00016156;0,20752580
+            -200,00004956;0,52491830
+            ...
     """
     # Formatting of file is separated by ";" and decimals using ","
     # First two rows are headers.
     try:
-        start = perf_counter()
         data = pd.read_csv(filename, sep=";", decimal=",", skiprows=[0, 2])
-        print(f"Total time for file import: {perf_counter()-start}")
     except (FileNotFoundError, xlrd.biffh.XLRDError, Exception) as error:
         sys.exit(error)
     else:
@@ -30,19 +44,32 @@ def picoscope_data_loader(filename: str) -> pd.DataFrame:
 
 
 class Data:
+    """Class used for storing the data and important parameters.
+    """
     def __init__(self, loader=picoscope_data_loader) -> None:
         self._loader = loader
         self._data = None
         self._trigger_offset = None
 
-    def load(self, data_path, remove_offset: bool = True):
+    def load(self, data_path: str, remove_offset: bool = True) -> None:
+        """Method used to load the actual file from disk into memory.
+        Also calculates important parameters such as sampling frequency,
+        sampling period and memory usage.
+
+        Args:
+            data_path (str): Path to or name of the file to be loaded.
+            remove_offset (bool, optional): Set this to remove offset on
+                the data. If a trigger offset was used during data collection,
+                the first sample can have the time stamp -200ms instead of 0ms.
+                Defaults to True.
+        """
         try:
             self._data = self._loader(data_path)
         except Exception as error:
             print(error)
 
         self._size = len(self._data)
-        self._frequency_hz = calculate_sampling_frequency(self._data)
+        self._frequency_hz = _calculate_sampling_frequency(self._data)
         self._period = 1 / self._frequency_hz
         self._memory_usage = self._data.memory_usage(index=True, deep=True)
 
@@ -53,32 +80,43 @@ class Data:
             self._data.time -= self._data.time.iloc[0]
 
     @property
-    def data(self):
+    def data(self) -> pd.DataFrame:
+        """The imported data stored as a pd.DataFrame."""
         return self._data
 
     @property
-    def size(self):
+    def size(self) -> int:
+        """The row count of the imported data."""
         return self._size
 
     @property
     def frequency_hz(self):
+        """The calculated sampling frequency."""
         return self._frequency_hz
 
     @property
     def period(self):
+        """The calculated period, i.e. the inverse
+        of the sampling frequency."""
         return self._period
 
     @property
-    def memory_usage(self):
+    def memory_usage(self) -> pd.Series:
+        """The memory used by the imported data.
+        Stored as a pd.Series with one entry per column."""
         return self._memory_usage
 
     @property
     def memory_usage_mb(self) -> int:
+        """The memory used by the imported data.
+        Calculated to show total size in megabytes."""
         memory_mb = round(sum(self._memory_usage / 1000 ** 2), 3)
         return int(memory_mb)
 
     @property
     def memory_usage_kb(self) -> int:
+        """The memory used by the imported data.
+        Calculated to show total size in kilobytes."""
         memory_kb = round(sum(self._memory_usage / 1000), 3)
         return int(memory_kb)
 
@@ -87,12 +125,20 @@ def slice_data(data: Data, start_ms: int = None, end_ms: int = None) -> Data:
     """Function that takes a Data object and slice the data into a subset.
     Can be used if there is an interest only for a small part of the data.
 
-    :param data: A Data object
-    :type data: Data
-    :param start_ms: Where to start slicing in ms, defaults to None
-    :type start_ms: int, optional
-    :param end_ms: Where to stop slicing in ms, defaults to None
-    :type end_ms: int, optional
+    Args:
+        data (Data): A Data object to be sliced.
+        start_ms (int, optional): Where to start the slicing, given in ms.
+            if None, the slice will start from the first sample.
+            Defaults to None.
+        end_ms (int, optional): Where to stop the slice, given in ms.
+            If None, the slice will continue until the end of the data.
+            Defaults to None.
+
+    Returns:
+        Data: Returns a data object that is a subset of the input.
+    """
+
+    """
     :return: Returns a data object that is a subset of the input
     :rtype: Data
     """
@@ -114,7 +160,18 @@ def slice_data(data: Data, start_ms: int = None, end_ms: int = None) -> Data:
     return new_copy
 
 
-def calculate_sampling_frequency(data):
+def _calculate_sampling_frequency(data: Data) -> int:
+    """Function used to calculate the sampling frequency and making
+    sure that the sampling frequency is constant. Without a constant
+    frequency it will not be able to run FFT analysis on the signal.
+
+    Args:
+        data (Data): Input is a object of the Data class.
+
+    Returns:
+        int: Returns the sampling frequency as calculated from
+        the time difference between the samples.
+    """
     # Calculate a pandas series with the difference between all elements.
     diff = data.time.diff()[1:]
 

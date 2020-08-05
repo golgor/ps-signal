@@ -1,4 +1,4 @@
-Underline titles with punctuation
+Testing rts syntax
 =================================
 For subtitles, switch to another punctuation mark
 -------------------------------------------------
@@ -35,6 +35,12 @@ print help(docutils)
 >>> print 'But doctests start with ">>>" and need no indentation.'
 
 .. note::
+  Tid;Kanal A
+  (ms);(mV)
+
+  -200,00016156;0,20752580
+  -200,00004956;0,52491830
+
   Your note should consist of one or more paragraphs, all indented
   so that they clearly belong to the note and not to the text or
   directive that follows.
@@ -42,7 +48,7 @@ print help(docutils)
   versionadded, versionchanged, seealso, deprecated, rubric,
   centered, hlist, glossary, productionlist.
 
-.. code-block:: c
+.. code-block::
 
   /* Or say "highlight::" once to set the language for all of the
   code blocks that follow it. Options include ":linenos:",
@@ -89,6 +95,8 @@ be the :index:`target` of several index entries!
 .. index::
    pair: copper; wire
 
+Paragraph nummer one!
+---------------------
 This paragraph will be listed in the index under both “wire, copper”
 and “copper, wire.” See the Sphinx documentation for even more complex
 ways of building index entries.
