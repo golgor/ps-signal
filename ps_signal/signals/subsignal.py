@@ -1,20 +1,22 @@
+"""Module for the class SubSignal. Used to create subsets of Signal.
+
+.. deprecated:: 0.1.6
+    Use :class:`Data` and :func:`slice_data` instead.
+"""
 import pandas as pd
 from .signal import Signal
 
 
-__all__ = ['SubSignal']
-
-
 class SubSignal(Signal):
-    # Redefine the init function as it should not load data from a
-    # file, but create subsets of already imported data
+    """Deprecated class.
+    """
     def __init__(self, id: str):
         super().__init__(id)
 
     def load_data(self, signal, start_ms=None, end_ms=None):
         if isinstance(signal, Signal):
             if start_ms or end_ms:
-                self._data = get_slice(signal, start_ms, end_ms)
+                self._data = _get_slice(signal, start_ms, end_ms)
             else:
                 self._data = signal.data
             # Calculate various properties for the signal.
@@ -25,19 +27,9 @@ class SubSignal(Signal):
             return NotImplemented
 
 
-def get_slice(signal: Signal, start_ms: int = None,
-              end_ms: int = None) -> pd.DataFrame:
-    """Helper function that will return a slice of a Signal. Intended to
-    be used to isolate a SubSignal from a Signal.
-
-    :param signal: Signal containing data to be sliced.
-    :type signal: Signal
-    :param start_ms: Where to start slicing the data in ms. Defaults to None.
-    :type start_ms: int, optional
-    :param end_ms: Where to stop slicing the data in ms. Defaults to None.
-    :type end_ms: int, optional
-    :return: returns a slice of the data in Signal as a DataFrame.
-    :rtype: pd.DataFrame
+def _get_slice(signal: Signal, start_ms: int = None,
+               end_ms: int = None) -> pd.DataFrame:
+    """Deprecated helper function.
     """
     if start_ms is None:
         start_ms = 0

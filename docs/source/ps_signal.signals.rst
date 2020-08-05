@@ -32,7 +32,7 @@ ps\_signal.signals.plot module
 ------------------------------
 
 .. automodule:: ps_signal.signals.plot
-   :members:
+   :members: plot_data, _plot_time_series, _plot_fft
    :undoc-members:
    :show-inheritance:
 
