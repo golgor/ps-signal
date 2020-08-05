@@ -45,6 +45,10 @@ def picoscope_data_loader(filename: str) -> pd.DataFrame:
 
 class Data:
     """Class used for storing the data and important parameters.
+
+    Args:
+        loader (function): A function to use as a file importer.
+            Defaults to picoscope_data_loader.
     """
     def __init__(self, loader=picoscope_data_loader) -> None:
         self._loader = loader
