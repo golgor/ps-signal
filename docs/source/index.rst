@@ -6,10 +6,11 @@ Welcome to the documentation about ps-signal!
 
    modules
    license
+   testing
 
 ps-signal main
 ===================
-.. automodule::__main__
+.. automodule::modules
   :members:
 
 cli interface
