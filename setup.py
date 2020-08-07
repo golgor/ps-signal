@@ -16,8 +16,8 @@ setup(
     long_description=long_description,
     long_description_content_type='text/markdown',
     project_urls={
-        'Documentation':'https://ps-signal.readthedocs.io/en/latest/',
-        'Source':'https://github.com/golgor/ps-signal/'
+        'Documentation': 'https://ps-signal.readthedocs.io/en/latest/',
+        'Source': 'https://github.com/golgor/ps-signal/'
     },
     author='Robert Nyström',
     author_email='golgafrincham@gmail.com',
