@@ -23,7 +23,7 @@ def picoscope_data_loader(filename: str) -> pd.DataFrame:
         This is the standard when exporting a .csv from PicoScope Software.
         Note the ' ; ' as delimiter and ' , ' as decimal point.
 
-        .. code-block::
+        .. code-block:: python
 
             Tid;Kanal A
             (ms);(mV)

@@ -13,7 +13,7 @@ def _plotting_dispatch(fn):
 
     Examples:
 
-        .. code-block::
+        .. code-block:: python
 
             @_plotting_dispatch
             def plot_data(signal, **kwargs):
@@ -66,7 +66,7 @@ def plot_data(signal, **kwargs):
         As this function is decorated, it has to be added manually in
         ps_signal.signals.rst
 
-        .. code-block::
+        .. code-block:: python
 
             .. automodule:: ps_signal.signals.plot
                 :members: plot_data, _plot_time_series, _plot_fft
@@ -96,7 +96,7 @@ def _plot_time_series(*, signal, **kwargs):
         As this function is decorated, it has to be added manually in
         ps_signal.signals.rst
 
-        .. code-block::
+        .. code-block:: python
 
             .. automodule:: ps_signal.signals.plot
                 :members: plot_data, _plot_time_series, _plot_fft
@@ -144,7 +144,7 @@ def _plot_fft(*, signal, **kwargs):
         As this function is decorated, it has to be added manually in
         ps_signal.signals.rst
 
-        .. code-block::
+        .. code-block:: python
 
             .. automodule:: ps_signal.signals.plot
                 :members: plot_data, _plot_time_series, , _plot_fft

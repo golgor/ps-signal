@@ -48,7 +48,7 @@ print help(docutils)
   versionadded, versionchanged, seealso, deprecated, rubric,
   centered, hlist, glossary, productionlist.
 
-.. code-block::
+.. code-block:: python
 
   /* Or say "highlight::" once to set the language for all of the
   code blocks that follow it. Options include ":linenos:",
