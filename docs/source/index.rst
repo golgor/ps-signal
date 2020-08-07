@@ -8,7 +8,6 @@ Welcome to the documentation about ps-signal!
    ps_signal
    license
    testing
-   todo
 
 Indices and tables
 ==================

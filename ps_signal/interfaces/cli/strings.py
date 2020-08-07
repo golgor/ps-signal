@@ -1,3 +1,7 @@
+"""Module that contains the help strings that is used for all arguments
+initialized in :mod:`.cli_conf`
+"""
+
 welcome = "Python script for performing FFT and plotting \
            .csv data aquired from a Picoscope."
 

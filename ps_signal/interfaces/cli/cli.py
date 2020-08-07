@@ -1,11 +1,15 @@
+"""Module that is the entry point from the interaces to invoke the CLI.
+"""
 from . import cli_conf
 from ... import signals
 from ...signals import data
 
-__all__ = ['run_cli']
-
 
 def run_cli():
+    """Function that is the entry point into the CLI package. This is the
+    function that will invoke and execute the CLI. It uses :mod:`.cli_conf`
+    for configuration of the CLI.
+    """
     args = cli_conf.parse_args()
 
     # Instantiate a Data object and load data from a file.

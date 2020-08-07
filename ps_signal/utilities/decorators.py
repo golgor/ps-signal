@@ -1,7 +1,20 @@
+"""Module containing various project-wide decorators for things like timing.
+"""
+
 from functools import wraps
 
 
 class VerbosePrinter:
+    """Callable class that should be used a decorator on functions to
+    measure the execution time and print information about what function
+    is running.
+
+    Args:
+        timer (bool, optional): Indication if the functions execution
+            time should be measured. Defaults to False.
+        text (str, optional): A string to print out when the function
+            is executed. Defaults to None.
+    """
     def __init__(self, timer: bool = False, text: str = None) -> None:
         self.timer = timer
         self.text = text
@@ -22,7 +35,7 @@ class VerbosePrinter:
             if self.timer:
                 elapsed_time = perf_counter() - start
                 print(f"Elapsed time: {elapsed_time:.2f} seconds")
-            print("="*50)
+            print("=" * 50)
             return ret
         return inner
 
@@ -30,6 +43,8 @@ class VerbosePrinter:
 # Experimental decorator factory for decorating
 # functions with extra attributes.
 def attributes(**attrs):
+    """Experimental decorator to add new attributes to objects.
+    """
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
