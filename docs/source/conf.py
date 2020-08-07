@@ -20,7 +20,7 @@ sys.setrecursionlimit(1500)
 project = 'ps-signal'
 copyright = '2020, Robert Nyström'
 author = 'Robert Nyström'
-master_doc = 'index
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
