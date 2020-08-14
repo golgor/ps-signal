@@ -11,7 +11,7 @@ from scipy.signal import filtfilt, butter
 from copy import deepcopy
 
 
-class Filter:
+class _Filter:
     """A callable class that applies filtering to a Signal.
 
     Args:
@@ -73,8 +73,8 @@ class Filter:
                     ")")
 
 
-def _apply_low_pass_filter(signal: Signal, cutoff: float,
-                           cutoff_upper: float = None) -> Signal:
+def _apply_lowpass_filter(signal: Signal, cutoff: float,
+                          cutoff_upper: float = None) -> Signal:
     """Function for performing low pass filtering on a signal.
     Intended to be passed as a filtering function when
     instantiating a Filter object.
@@ -101,8 +101,8 @@ def _apply_low_pass_filter(signal: Signal, cutoff: float,
     return signal
 
 
-def _apply_high_pass_filter(signal: Signal, cutoff: float,
-                            cutoff_upper: float = None) -> Signal:
+def _apply_highpass_filter(signal: Signal, cutoff: float,
+                           cutoff_upper: float = None) -> Signal:
     """Function for performing high pass filtering on a signal.
     Intended to be passed as a filtering function when
     instantiating a Filter object.
@@ -129,8 +129,8 @@ def _apply_high_pass_filter(signal: Signal, cutoff: float,
     return signal
 
 
-def _apply_band_pass_filter(signal: Signal, cutoff: float,
-                            cutoff_upper: float = None) -> Signal:
+def _apply_bandpass_filter(signal: Signal, cutoff: float,
+                           cutoff_upper: float = None) -> Signal:
     """Function for performing band pass filtering on a signal. Everything
     but the frequencies in between cutoff and cutoff_upper will be filtered
     out.
@@ -160,8 +160,8 @@ def _apply_band_pass_filter(signal: Signal, cutoff: float,
     return signal
 
 
-def _apply_band_stop_filter(signal: Signal, cutoff: float,
-                            cutoff_upper: float = None) -> Signal:
+def _apply_bandstop_filter(signal: Signal, cutoff: float,
+                           cutoff_upper: float = None) -> Signal:
     """Function for performing band stop filtering on a signal. All
     frequencies in between cutoff and cutoff_upper will be filtered out.
 
@@ -196,29 +196,29 @@ _bandpass_filter_instance = None
 _bandstop_filter_instance = None
 
 
-def lowpass_filter():
+def lowpass():
     global _lowpass_filter_instance
     if _lowpass_filter_instance is None:
-        _lowpass_filter_instance = Filter(_apply_low_pass_filter, 'lowpass')
+        _lowpass_filter_instance = _Filter(_apply_lowpass_filter, 'lowpass')
     return _lowpass_filter_instance
 
 
-def highpass_filter():
+def highpass():
     global _highpass_filter_instance
     if _highpass_filter_instance is None:
-        _highpass_filter_instance = Filter(_apply_high_pass_filter, 'highpass')
+        _highpass_filter_instance = _Filter(_apply_highpass_filter, 'highpass')
     return _highpass_filter_instance
 
 
-def bandpass_filter():
+def bandpass():
     global _bandpass_filter_instance
     if _bandpass_filter_instance is None:
-        _bandpass_filter_instance = Filter(_apply_band_pass_filter, 'bandpass')
+        _bandpass_filter_instance = _Filter(_apply_bandpass_filter, 'bandpass')
     return _bandpass_filter_instance
 
 
-def bandstop_filter():
+def bandstop():
     global _bandstop_filter_instance
     if _bandstop_filter_instance is None:
-        _bandstop_filter_instance = Filter(_apply_band_stop_filter, 'bandstop')
+        _bandstop_filter_instance = _Filter(_apply_bandstop_filter, 'bandstop')
     return _bandstop_filter_instance

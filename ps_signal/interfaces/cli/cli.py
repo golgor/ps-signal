@@ -3,6 +3,7 @@
 from . import cli_conf
 from ... import signals
 from ...signals import data
+from ...signals import filters
 
 
 def run_cli():
@@ -11,10 +12,10 @@ def run_cli():
     for configuration of the CLI.
     """
     # Singleton instances of the different kinds of filters.
-    lowpass_filter = signals.filters.lowpass_filter()
-    highpass_filter = signals.filters.highpass_filter()
-    bandpass_filter = signals.filters.bandpass_filter()
-    bandstop_filter = signals.filters.bandstop_filter()
+    lowpass_filter = filters.lowpass()
+    highpass_filter = filters.highpass()
+    bandpass_filter = filters.bandpass()
+    bandstop_filter = filters.bandstop()
 
     args = cli_conf.parse_args()
 
