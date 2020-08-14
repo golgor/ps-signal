@@ -10,6 +10,12 @@ def run_cli():
     function that will invoke and execute the CLI. It uses :mod:`.cli_conf`
     for configuration of the CLI.
     """
+    # Singleton instances of the different kinds of filters.
+    lowpass_filter = signals.filters.lowpass_filter()
+    highpass_filter = signals.filters.highpass_filter()
+    bandpass_filter = signals.filters.bandpass_filter()
+    bandstop_filter = signals.filters.bandstop_filter()
+
     args = cli_conf.parse_args()
 
     # Instantiate a Data object and load data from a file.
@@ -32,32 +38,32 @@ def run_cli():
         input_signal = signals.Signal(id="Signal_1", input_data=input_data)
 
     if args.lp:
-        signals.lowpass_filter(
+        lowpass_filter(
             input_signal,
             cutoff=args.lp,
             inplace=True
         )
 
     if args.hp:
-        signals.highpass_filter(
+        highpass_filter(
             input_signal,
             cutoff=args.hp,
             inplace=True
         )
 
-    if args.bs:
-        signals.bandstop_filter(
-            input_signal,
-            cutoff=args.bs[0],
-            cutoff_upper=args.bs[1],
-            inplace=True
-        )
-
     if args.bp:
-        signals.bandpass_filter(
+        bandpass_filter(
             input_signal,
             cutoff=args.bp[0],
             cutoff_upper=args.bp[1],
+            inplace=True
+        )
+
+    if args.bs:
+        bandstop_filter(
+            input_signal,
+            cutoff=args.bs[0],
+            cutoff_upper=args.bs[1],
             inplace=True
         )
 

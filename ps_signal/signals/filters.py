@@ -190,7 +190,35 @@ def _apply_band_stop_filter(signal: Signal, cutoff: float,
     return signal
 
 
-lowpass_filter = Filter(_apply_low_pass_filter, "lowpass")
-highpass_filter = Filter(_apply_high_pass_filter, "highpass")
-bandpass_filter = Filter(_apply_band_pass_filter, "bandpass")
-bandstop_filter = Filter(_apply_band_stop_filter, "bandstop")
+_lowpass_filter_instance = None
+_highpass_filter_instance = None
+_bandpass_filter_instance = None
+_bandstop_filter_instance = None
+
+
+def lowpass_filter():
+    global _lowpass_filter_instance
+    if _lowpass_filter_instance is None:
+        _lowpass_filter_instance = Filter(_apply_low_pass_filter, 'lowpass')
+    return _lowpass_filter_instance
+
+
+def highpass_filter():
+    global _highpass_filter_instance
+    if _highpass_filter_instance is None:
+        _highpass_filter_instance = Filter(_apply_high_pass_filter, 'highpass')
+    return _highpass_filter_instance
+
+
+def bandpass_filter():
+    global _bandpass_filter_instance
+    if _bandpass_filter_instance is None:
+        _bandpass_filter_instance = Filter(_apply_band_pass_filter, 'bandpass')
+    return _bandpass_filter_instance
+
+
+def bandstop_filter():
+    global _bandstop_filter_instance
+    if _bandstop_filter_instance is None:
+        _bandstop_filter_instance = Filter(_apply_band_stop_filter, 'bandstop')
+    return _bandstop_filter_instance

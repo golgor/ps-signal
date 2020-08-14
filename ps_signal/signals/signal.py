@@ -29,7 +29,7 @@ class Signal:
         self._period = input_data.period
         self._total_time = self._sample_size * self._period
 
-        self._applied_filters = list()
+        self._applied_filters = []
         self._output_filename = str(self._id)
         self._fft = None
 
