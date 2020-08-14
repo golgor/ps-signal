@@ -197,6 +197,13 @@ _bandstop_filter_instance = None
 
 
 def lowpass():
+    """Function to create a singelton of _Filter class that will
+    be used as a lowpass filter.
+
+    Returns:
+        _Filter: Returns an object of type _Filter that is parametrized
+        for lowpass filtering.
+    """
     global _lowpass_filter_instance
     if _lowpass_filter_instance is None:
         _lowpass_filter_instance = _Filter(_apply_lowpass_filter, 'lowpass')
@@ -204,6 +211,13 @@ def lowpass():
 
 
 def highpass():
+    """Function to create a singelton of _Filter class that will
+    be used as a highpass filter.
+
+    Returns:
+        _Filter: Returns an object of type _Filter that is parametrized
+        for highpass filtering.
+    """
     global _highpass_filter_instance
     if _highpass_filter_instance is None:
         _highpass_filter_instance = _Filter(_apply_highpass_filter, 'highpass')
@@ -211,6 +225,13 @@ def highpass():
 
 
 def bandpass():
+    """Function to create a singelton of _Filter class that will
+    be used as a bandpass filter.
+
+    Returns:
+        _Filter: Returns an object of type _Filter that is parametrized
+        for bandpass filtering.
+    """
     global _bandpass_filter_instance
     if _bandpass_filter_instance is None:
         _bandpass_filter_instance = _Filter(_apply_bandpass_filter, 'bandpass')
@@ -218,6 +239,13 @@ def bandpass():
 
 
 def bandstop():
+    """Function to create a singelton of _Filter class that will
+    be used as a bandstop filter.
+
+    Returns:
+        _Filter: Returns an object of type _Filter that is parametrized
+        for bandstop filtering.
+    """
     global _bandstop_filter_instance
     if _bandstop_filter_instance is None:
         _bandstop_filter_instance = _Filter(_apply_bandstop_filter, 'bandstop')
